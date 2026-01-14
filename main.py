@@ -48,15 +48,22 @@ class OSC(App):
         return root
 
     def set_connect(self, button):
-        self.ip = self.ip_text.text
-        self.port = int(self.port_text.text)
-        self.connect(self.ip, self.port)
-        
+        try:
+            self.ip = self.ip_text.text
+            self.port = int(self.port_text.text)
+            self.connect(self.ip, self.port)
+        except:
+            button.background_normal = ""
+            button.background_color = [1,0,0,1]
 
     def on_button(self, button):
-        print(f"hi {button.text}")
-        o = self.c.send_message(f"{button.text}", "")
-        print(o)
+        try:
+            print(f"hi {button.text}")
+            o = self.c.send_message(f"{button.text}", "")
+            print(o)
+        except:
+            button.background_normal = ""
+            button.background_color = [1,0,0,1]
 
     def connect(self, ip="0.0.0.0", port=8080):
         from pythonosc.udp_client import SimpleUDPClient
@@ -67,3 +74,4 @@ class OSC(App):
 if __name__ == '__main__':
     OSC().run()
 
+ 
