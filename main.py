@@ -73,7 +73,7 @@ class OSC(App):
 
     def get_config_file(self):
         parent = primary_external_storage_path()
-        return parent + "/config.ini" 
+        return parent + "/osc_config.ini" 
 
     def get_config(self):
         self.config_file = self.get_config_file()
