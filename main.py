@@ -6,6 +6,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from osc_build import send_osc_blank, send_osc_float
 from threading import Thread
+from time import time
 
 class OSC(App):
     def build(self):
@@ -56,6 +57,12 @@ class OSC(App):
             button.background_color = [1,0,0,1]
 
     def on_button(self, button):
+        now = time()
+        if getattr(button, "_last", 0) + 0.2 > now:
+            return
+
+        button._last = now
+
         try:
             print(f"hi {button.text}")
 #            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
