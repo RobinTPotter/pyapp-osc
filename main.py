@@ -7,17 +7,30 @@ from kivy.uix.boxlayout import BoxLayout
 from osc_build import send_osc_blank, send_osc_float
 from threading import Thread
 from time import time
+from kivy.metrics import dp
+
+try:
+    from android.storage import primary_external_storage_path
+except:
+    def primary_external_storage_path():
+        return "./"
 
 class OSC(App):
+
+    def hey(self,texts):
+        return "" if len(texts)==0 else texts.pop(0)
+
+
     def build(self):
+        self.get_config()
         self.ip = "192.168.1.174"
         self.port = 57120
 
         root = BoxLayout(orientation="vertical")
 
-        very_top = BoxLayout(orientation="horizontal", size_hint_y=0.05)
-        self.ip_text = TextInput(text=self.ip, multiline=False)
-        self.port_text = TextInput(text=str(self.port), multiline=False)
+        very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
+        self.ip_text = TextInput(text=self.ip, multiline=False, size_hint_x=5)
+        self.port_text = TextInput(text=str(self.port), multiline=False, size_hint_x=2)
         setme = Button(text="Set")
         setme.bind(on_press=self.set_connect)
 
@@ -28,24 +41,57 @@ class OSC(App):
 
 
         top = BoxLayout(orientation="horizontal", size_hint_y=0.6)
-        b1 = Button(text="/voice")
+        b1 = Button(text=self.hey(self.texts))
         b1.bind(on_press=self.on_button)
-        b2 = Button(text="/voice/saw")
+        b2 = Button(text=self.hey(self.texts))
         b2.bind(on_press=self.on_button)
         top.add_widget(b1)
         top.add_widget(b2)
         bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4) #, spacing=5, padding=5)
-        for i in range(14):
-            b = Button(text=f"B{i}")
-            b.bind(on_press=self.on_button)
-            bottom.add_widget(b)
-
-        for i in range(2):
-            bottom.add_widget(Widget())
+        for i in range(16):
+            t = self.hey(self.texts)
+            if t!="":
+                b = Button(text=t)
+                b.bind(on_press=self.on_button)
+                bottom.add_widget(b)
+            else:
+                bottom.add_widget(Widget())
 
         root.add_widget(top)
         root.add_widget(bottom)
         return root
+
+    def on_start(self):
+        try:
+            from android.permissions import request_permissions, Permission
+            request_permissions([
+                Permission.READ_EXTERNAL_STORAGE,
+                Permission.WRITE_EXTERNAL_STORAGE,
+            ])
+        except:
+            print("possibly not android")
+
+    def get_config_file(self):
+        parent = primary_external_storage_path()
+        return parent + "/config.ini" 
+
+    def get_config(self):
+        self.config_file = self.get_config_file()
+
+        import os 
+        if not os.path.exists(self.config_file):
+            print("no config make default")
+            with open(self.config_file,"w") as f:
+                f.write("\n")
+                f.write("/voice/saw\n")
+                f.write("/voice/sine\n")
+                f.write("/voice/pulse\n")
+
+        with open(self.config_file,"r") as f:
+            self.texts = f.readlines()
+
+        print(self.texts)
+
 
     def set_connect(self, button):
         try:
