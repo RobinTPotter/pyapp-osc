@@ -13,6 +13,8 @@ try:
     from android.storage import primary_external_storage_path
 except:
     def primary_external_storage_path():
+        import os
+        os.mkdir("./Documents")
         return "./"
 
 class OSC(App):
@@ -72,7 +74,7 @@ class OSC(App):
             print("possibly not android")
 
     def get_config_file(self):
-        parent = primary_external_storage_path()
+        parent = primary_external_storage_path() + "/Documents"
         return parent + "/osc_config.ini" 
 
     def get_config(self):
