@@ -28,7 +28,7 @@ class OSC(App):
         self.ip = "192.168.1.174"
         self.port = 57120
 
-        root = BoxLayout(orientation="vertical")
+        root = BoxLayout(orientation="vertical", padding=5)
 
         very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
         self.ip_text = TextInput(text=self.ip, multiline=False, size_hint_x=5)
@@ -52,7 +52,7 @@ class OSC(App):
         bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4) #, spacing=5, padding=5)
         for i in range(16):
             t = self.hey(self.texts)
-            if t!="":
+            if len(t)>0:
                 b = Button(text=t)
                 b.bind(on_press=self.on_button)
                 bottom.add_widget(b)
