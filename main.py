@@ -5,6 +5,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from osc_build import send_osc
+from threading import Thread
 
 class OSC(App):
     def build(self):
@@ -26,7 +27,7 @@ class OSC(App):
 
 
         top = BoxLayout(orientation="horizontal", size_hint_y=0.6)
-        b1 = Button(text="/voice/sine")
+        b1 = Button(text="/voice")
         b1.bind(on_press=self.on_button)
         b2 = Button(text="/voice/saw")
         b2.bind(on_press=self.on_button)
@@ -49,6 +50,7 @@ class OSC(App):
         try:
             self.ip = self.ip_text.text
             self.port = int(self.port_text.text)
+            print(f"set {self.ip} {self.port}")
         except:
             button.background_normal = ""
             button.background_color = [1,0,0,1]
@@ -57,8 +59,12 @@ class OSC(App):
         try:
             print(f"hi {button.text}")
 #            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
-            o = send_osc(self.ip, self.port, button.text) #, args=None)
-            print(o)
+            Thread(
+                target = send_blank_osc,
+                args = (self.ip, self.port, button.text), #, [""]),
+                daemon=True,
+            ).start()
+            #print(o)
         except:
             button.background_normal = ""
             button.background_color = [1,0,0,1]

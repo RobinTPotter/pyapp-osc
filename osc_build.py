@@ -10,24 +10,18 @@ def osc_pad(s: bytes) -> bytes:
     return s
 
 
-def osc_message(address: str, args=None) -> bytes:
-    if args is None:
-        args = []
-
+def osc_blank_message(address: str) -> bytes:
+    print(f"creating message {address}") 
     msg = osc_pad(address.encode("utf-8"))
-
-    # type tag string
-    tags = "," + "".join("s" for _ in args)
-    msg += osc_pad(tags.encode("utf-8"))
-
-    for arg in args:
-        msg += osc_pad(str(arg).encode("utf-8"))
-
+    msg += osc_pad(b",")
     return msg
 
 
-def send_osc(ip, port, address, args=None):
-    data = osc_message(address, args)
+
+def send_osc(ip, port, address): #, args=None):
+    print(f"send to {port} {ip}")
+    data = osc_message(address) #, args)
+    print(f"data to send is {data}")
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(data, (ip, port))
     sock.close()
