@@ -4,8 +4,7 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.lib.osc import oscAPI
-
+from osc_build import send_osc
 
 class OSC(App):
     def build(self):
@@ -57,7 +56,8 @@ class OSC(App):
     def on_button(self, button):
         try:
             print(f"hi {button.text}")
-            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
+#            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
+            o = send_osc(self.ip, self.port, button.text) #, args=None)
             print(o)
         except:
             button.background_normal = ""
