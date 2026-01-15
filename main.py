@@ -9,9 +9,20 @@ from threading import Thread
 from time import time
 from kivy.metrics import dp
 
+import sys
+from kivy.logger import Logger
+
+def excepthook(exctype, value, traceback):
+    Logger.exception("Uncaught exception", exc_info=(exctype, value, traceback))
+
+sys.excepthook = excepthook
+
+
 try:
     from android.storage import primary_external_storage_path
+    Logger.info("imported for android storage")
 except:
+    Logger.info("non android storage")
     def primary_external_storage_path():
         import os
         os.mkdir("./Documents")
@@ -28,19 +39,18 @@ class OSC(App):
         self.ip = "192.168.1.174"
         self.port = 57120
 
-        root = BoxLayout(orientation="vertical", padding=5)
+        root = BoxLayout(orientation="vertical")
 
         very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
         self.ip_text = TextInput(text=self.ip, multiline=False, size_hint_x=5)
         self.port_text = TextInput(text=str(self.port), multiline=False, size_hint_x=2)
         setme = Button(text="Set")
         setme.bind(on_press=self.set_connect)
-
         very_top.add_widget(self.ip_text)
         very_top.add_widget(self.port_text)
         very_top.add_widget(setme)
         root.add_widget(very_top)
-
+        Logger.info("very_top set up")
 
         top = BoxLayout(orientation="horizontal", size_hint_y=0.6)
         b1 = Button(text=self.hey(self.texts))
@@ -49,7 +59,10 @@ class OSC(App):
         b2.bind(on_press=self.on_button)
         top.add_widget(b1)
         top.add_widget(b2)
-        bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4) #, spacing=5, padding=5)
+        root.add_widget(top)
+        Logger.info("top set up")
+
+        bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4, spacing=5, padding=5)
         for i in range(16):
             t = self.hey(self.texts)
             if len(t)>0:
@@ -59,8 +72,9 @@ class OSC(App):
             else:
                 bottom.add_widget(Widget())
 
-        root.add_widget(top)
         root.add_widget(bottom)
+        Logger.info("bottom set up")
+
         return root
 
     def on_start(self):
@@ -89,17 +103,19 @@ class OSC(App):
                 f.write("/voice/sine\n")
                 f.write("/voice/pulse\n")
 
+            Logger.info("written fake config")
+
         with open(self.config_file,"r") as f:
             self.texts = f.readlines()
 
-        print(self.texts)
+        Logger.info(self.texts)
 
 
     def set_connect(self, button):
         try:
             self.ip = self.ip_text.text
             self.port = int(self.port_text.text)
-            print(f"set {self.ip} {self.port}")
+            Logger.info(f"set {self.ip} {self.port}")
         except:
             button.background_normal = ""
             button.background_color = [1,0,0,1]
@@ -112,7 +128,7 @@ class OSC(App):
         button._last = now
 
         try:
-            print(f"hi {button.text}")
+            Logger.info(f"hi {button.text}")
 #            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
             Thread(
                 target = send_osc_blank,
