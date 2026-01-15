@@ -65,7 +65,8 @@ class OSC(App):
                 daemon=True,
             ).start()
             #print(o)
-        except:
+        except Exception as e:
+            print(e)
             button.background_normal = ""
             button.background_color = [1,0,0,1]
 

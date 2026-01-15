@@ -27,7 +27,7 @@ def send_osc_float(ip, port, address, value):
 
 def send_osc_blank(ip, port, address): #, args=None):
     print(f"send to {port} {ip}")
-    data = osc_message(address) #, args)
+    data = osc_blank_message(address) #, args)
     print(f"data to send is {data}")
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(data, (ip, port))
