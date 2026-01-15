@@ -4,16 +4,15 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-
+from kivy.lib.osc import oscAPI
 
 
 class OSC(App):
     def build(self):
         self.ip = "192.168.1.174"
         self.port = 57120
-        self.connect(self.ip, self.port)
-        root = BoxLayout(orientation="vertical")
 
+        root = BoxLayout(orientation="vertical")
 
         very_top = BoxLayout(orientation="horizontal", size_hint_y=0.05)
         self.ip_text = TextInput(text=self.ip, multiline=False)
@@ -51,7 +50,6 @@ class OSC(App):
         try:
             self.ip = self.ip_text.text
             self.port = int(self.port_text.text)
-            self.connect(self.ip, self.port)
         except:
             button.background_normal = ""
             button.background_color = [1,0,0,1]
@@ -59,16 +57,16 @@ class OSC(App):
     def on_button(self, button):
         try:
             print(f"hi {button.text}")
-            o = self.c.send_message(f"{button.text}", "")
+            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
             print(o)
         except:
             button.background_normal = ""
             button.background_color = [1,0,0,1]
 
-    def connect(self, ip="0.0.0.0", port=8080):
-        from pythonosc.udp_client import SimpleUDPClient
-        self.c = SimpleUDPClient(ip, port)
-        print(self.c)
+#s    def connect(self, ip="0.0.0.0", port=8080):
+#        from pythonosc.udp_client import SimpleUDPClient
+#        self.c = SimpleUDPClient(ip, port)
+#        print(self.c)
 
 
 if __name__ == '__main__':
