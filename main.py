@@ -9,6 +9,10 @@ from threading import Thread
 from time import time
 from kivy.metrics import dp
 
+from kivy.clock import Clock
+from kivy.core.window import Window
+
+
 import sys
 from kivy.logger import Logger
 
@@ -28,7 +32,22 @@ except:
         os.mkdir("./Documents")
         return "./"
 
+
+
+
 class OSC(App):
+
+    def on_pause(self):
+        return True
+
+    def on_resume(self):
+        Clock.schedule_once(self.rebuild_ui, 0)
+
+    def rebuild_ui(self, dt):
+        Window.clearcolor = (0, 0, 0, 1)
+        self.root.clear_widgets()
+        self.root = self.build()
+
 
     def hey(self,texts):
         return "" if len(texts)==0 else texts.pop(0)
@@ -39,7 +58,7 @@ class OSC(App):
         self.ip = "192.168.1.174"
         self.port = 57120
 
-        root = BoxLayout(orientation="vertical")
+        root = BoxLayout(orientation="vertical", spacing=5, padding=5)
 
         very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
         self.ip_text = TextInput(text=self.ip, multiline=False, size_hint_x=5)
@@ -52,7 +71,7 @@ class OSC(App):
         root.add_widget(very_top)
         Logger.info("very_top set up")
 
-        top = BoxLayout(orientation="horizontal", size_hint_y=0.6)
+        top = BoxLayout(orientation="horizontal", size_hint_y=0.6, spacing=5, padding=5)
         b1 = Button(text=self.hey(self.texts))
         b1.bind(on_press=self.on_button)
         b2 = Button(text=self.hey(self.texts))
@@ -70,6 +89,7 @@ class OSC(App):
                 b.bind(on_press=self.on_button)
                 bottom.add_widget(b)
             else:
+                Logger.info("blank")
                 bottom.add_widget(Widget())
 
         root.add_widget(bottom)
@@ -108,6 +128,7 @@ class OSC(App):
         with open(self.config_file,"r") as f:
             self.texts = f.readlines()
 
+        self.texts = [t.strip() for t in self.texts]
         Logger.info(self.texts)
 
 
