@@ -4,7 +4,7 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from osc_build import send_osc
+from osc_build import send_osc_blank, send_osc_float
 from threading import Thread
 
 class OSC(App):
@@ -60,7 +60,7 @@ class OSC(App):
             print(f"hi {button.text}")
 #            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
             Thread(
-                target = send_blank_osc,
+                target = send_osc_blank,
                 args = (self.ip, self.port, button.text), #, [""]),
                 daemon=True,
             ).start()

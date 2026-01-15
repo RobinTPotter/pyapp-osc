@@ -16,9 +16,16 @@ def osc_blank_message(address: str) -> bytes:
     msg += osc_pad(b",")
     return msg
 
+def send_osc_float(ip, port, address, value):
+    msg = osc_pad(address.encode())
+    msg += osc_pad(b",f")
+    msg += struct.pack(">f", float(value))
 
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(msg, (ip, port))
+    sock.close()
 
-def send_osc(ip, port, address): #, args=None):
+def send_osc_blank(ip, port, address): #, args=None):
     print(f"send to {port} {ip}")
     data = osc_message(address) #, args)
     print(f"data to send is {data}")
