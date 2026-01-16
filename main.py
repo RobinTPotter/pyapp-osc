@@ -29,7 +29,7 @@ except:
     Logger.info("non android storage")
     def primary_external_storage_path():
         import os
-        os.mkdir("./Documents")
+        if not os.path.exists("./Documents"): os.mkdir("./Documents")
         return "./"
 
 
@@ -55,12 +55,12 @@ class OSC(App):
 
     def build(self):
         self.get_config()
-        self.ip = "192.168.1.174"
-        self.port = 57120
+#        self.ip = "192.168.1.174"
+#        self.port = 57120
 
-        root = BoxLayout(orientation="vertical", spacing=5, padding=5)
+        root = BoxLayout(orientation="vertical", spacing=5, padding=2)
 
-        very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
+        very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30), padding=2)
         self.ip_text = TextInput(text=self.ip, multiline=False, size_hint_x=5)
         self.port_text = TextInput(text=str(self.port), multiline=False, size_hint_x=2)
         setme = Button(text="Set")
@@ -71,17 +71,24 @@ class OSC(App):
         root.add_widget(very_top)
         Logger.info("very_top set up")
 
-        top = BoxLayout(orientation="horizontal", size_hint_y=0.6, spacing=5, padding=5)
+        top = GridLayout(cols=2, rows=2, size_hint_y=0.6, spacing=5, padding=2)
+	#BoxLayout(orientation="horizontal", size_hint_y=0.6, spacing=5, padding=2)
         b1 = Button(text=self.hey(self.texts))
         b1.bind(on_press=self.on_button)
         b2 = Button(text=self.hey(self.texts))
         b2.bind(on_press=self.on_button)
+        b3 = Button(text=self.hey(self.texts))
+        b3.bind(on_press=self.on_button)
+        b4 = Button(text=self.hey(self.texts))
+        b4.bind(on_press=self.on_button)
         top.add_widget(b1)
         top.add_widget(b2)
+        top.add_widget(b3)
+        top.add_widget(b4)
         root.add_widget(top)
         Logger.info("top set up")
 
-        bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4, spacing=5, padding=5)
+        bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4, spacing=5, padding=2)
         for i in range(16):
             t = self.hey(self.texts)
             if len(t)>0:
@@ -118,15 +125,18 @@ class OSC(App):
         if not os.path.exists(self.config_file):
             print("no config make default")
             with open(self.config_file,"w") as f:
-                f.write("\n")
-                f.write("/voice/saw\n")
-                f.write("/voice/sine\n")
-                f.write("/voice/pulse\n")
+                f.write("192.168.1.175\n")
+                f.write("57120\n")
+                for b in range(4): f.write(f"/voice/t{b}\n")
+                for b in range(16): f.write(f"/voice/b{b}\n")
 
             Logger.info("written fake config")
 
         with open(self.config_file,"r") as f:
             self.texts = f.readlines()
+
+        self.ip = self.texts.pop(0)
+        self.port = int(self.texts.pop(0))
 
         self.texts = [t.strip() for t in self.texts]
         Logger.info(self.texts)
@@ -137,7 +147,23 @@ class OSC(App):
             self.ip = self.ip_text.text
             self.port = int(self.port_text.text)
             Logger.info(f"set {self.ip} {self.port}")
-        except:
+            with open(self.config_file,"r") as f:
+                data = f.readlines()
+
+            data = [t.strip() for t in data]
+            data.pop(0)
+            data.pop(0)
+            data.insert(0, self.port)
+            data.insert(0, self.ip)
+            Logger.info("writing new port ip")
+
+            with open(self.config_file,"w") as f:
+                for d in data:
+                    f.write(f"{str(d).strip()}\n")
+
+            
+        except Exception as e:
+            Logger.error(e)
             button.background_normal = ""
             button.background_color = [1,0,0,1]
 
