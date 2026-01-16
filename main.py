@@ -41,17 +41,15 @@ class OSC(App):
         return True
 
     def on_resume(self):
-        Clock.schedule_once(self.rebuild_ui, 0)
+        Clock.schedule_once(self.rebuild_ui, 0.5)
 
     def rebuild_ui(self, dt):
         Window.clearcolor = (0, 0, 0, 1)
         self.root.clear_widgets()
         self.root = self.build()
 
-
     def hey(self,texts):
         return "" if len(texts)==0 else texts.pop(0)
-
 
     def build(self):
         self.get_config()
@@ -161,7 +159,6 @@ class OSC(App):
                 for d in data:
                     f.write(f"{str(d).strip()}\n")
 
-            
         except Exception as e:
             Logger.error(e)
             button.background_normal = ""
