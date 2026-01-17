@@ -1,3 +1,4 @@
+import os
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
@@ -53,8 +54,6 @@ class OSC(App):
 
     def build(self):
         self.get_config()
-#        self.ip = "192.168.1.174"
-#        self.port = 57120
 
         root = BoxLayout(orientation="vertical", spacing=5, padding=2)
 
@@ -70,7 +69,6 @@ class OSC(App):
         Logger.info("very_top set up")
 
         top = GridLayout(cols=2, rows=2, size_hint_y=0.6, spacing=5, padding=2)
-	#BoxLayout(orientation="horizontal", size_hint_y=0.6, spacing=5, padding=2)
         b1 = Button(text=self.hey(self.texts))
         b1.bind(on_press=self.on_button)
         b2 = Button(text=self.hey(self.texts))
@@ -91,6 +89,7 @@ class OSC(App):
             t = self.hey(self.texts)
             if len(t)>0:
                 b = Button(text=t)
+                b.nodeID = 0
                 b.bind(on_press=self.on_button)
                 b.bind(on_release=self.on_release_button)
                 bottom.add_widget(b)
@@ -115,19 +114,18 @@ class OSC(App):
 
     def get_config_file(self):
         parent = primary_external_storage_path() + "/Documents"
-        return parent + "/osc_config.ini" 
+        return parent + "/osc_config.ini"
 
     def get_config(self):
         self.config_file = self.get_config_file()
 
-        import os 
         if not os.path.exists(self.config_file):
             print("no config make default")
             with open(self.config_file,"w") as f:
                 f.write("192.168.1.175\n")
                 f.write("57120\n")
                 for b in range(4): f.write(f"/voice/t{b}\n")
-                for b in range(16): f.write(f"/voice/b{b}\n")
+                for b in range(16): f.write(f"/note {b+60}\n")
 
             Logger.info("written fake config")
 
@@ -171,16 +169,17 @@ class OSC(App):
             return
 
         button._last = now
+        button.nodeID = int(time() * 100) % 10 ** 9
 
         try:
             Logger.info(f"hi {button.text}")
-#            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
+            msg = button.text.split()
+            address = msg.pop(0)
             Thread(
-                target = send_osc_blank,
-                args = (self.ip, self.port, button.text), #, [""]),
+                target = send_osc,
+                args = (self.ip, self.port, address, msg), #, [""]),
                 daemon=True,
             ).start()
-            #print(o)
         except Exception as e:
             print(e)
             button.background_normal = ""
@@ -192,28 +191,22 @@ class OSC(App):
             return
 
         button._uplast = now
-
         try:
             Logger.info(f"hi up {button.text}")
 #            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
             Thread(
-                target = send_osc_blank,
+                target = send_osc_blank
+todotodo        if button.nodeID > 0:
+,
                 args = (self.ip, self.port, button.text + "/release"), #, [""]),
                 daemon=True,
             ).start()
-            #print(o)
         except Exception as e:
             print(e)
             button.background_normal = ""
             button.background_color = [1,0,0,1]
 
-#s    def connect(self, ip="0.0.0.0", port=8080):
-#        from pythonosc.udp_client import SimpleUDPClient
-#        self.c = SimpleUDPClient(ip, port)
-#        print(self.c)
-
 
 if __name__ == '__main__':
     OSC().run()
 
- 
