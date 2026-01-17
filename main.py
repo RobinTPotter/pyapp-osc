@@ -39,12 +39,15 @@ except:
 class OSC(App):
 
     def on_pause(self):
+        Logger.info("pause called")
         return True
 
     def on_resume(self):
+        Logger.info("on resume")
         Clock.schedule_once(self.rebuild_ui, 0.5)
 
     def rebuild_ui(self, dt):
+        Logger.info(f"rebuild ui {dt}")
         Window.clearcolor = (0, 0, 0, 1)
         self.root.clear_widgets()
         self.root = self.build()
@@ -53,9 +56,10 @@ class OSC(App):
         return "" if len(texts)==0 else texts.pop(0)
 
     def build(self):
+        Logger.info("build")
         self.get_config()
 
-        root = BoxLayout(orientation="vertical", spacing=5, padding=2)
+        self.root = BoxLayout(orientation="vertical", spacing=5, padding=2)
 
         very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
         self.ip_text = TextInput(text=str(self.ip).strip(), multiline=False, size_hint_x=5)
@@ -65,7 +69,7 @@ class OSC(App):
         very_top.add_widget(self.ip_text)
         very_top.add_widget(self.port_text)
         very_top.add_widget(setme)
-        root.add_widget(very_top)
+        self.root.add_widget(very_top)
         Logger.info("very_top set up")
 
         top = GridLayout(cols=2, rows=2, size_hint_y=0.6, spacing=5, padding=2)
@@ -81,7 +85,7 @@ class OSC(App):
         top.add_widget(b2)
         top.add_widget(b3)
         top.add_widget(b4)
-        root.add_widget(top)
+        self.root.add_widget(top)
         Logger.info("top set up")
 
         bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4, spacing=5, padding=2)
@@ -97,10 +101,10 @@ class OSC(App):
                 Logger.info("blank")
                 bottom.add_widget(Widget())
 
-        root.add_widget(bottom)
+        self.root.add_widget(bottom)
         Logger.info("bottom set up")
 
-        return root
+        return self.root
 
     def on_start(self):
         try:
@@ -109,6 +113,7 @@ class OSC(App):
                 Permission.READ_EXTERNAL_STORAGE,
                 Permission.WRITE_EXTERNAL_STORAGE,
             ])
+            Logger.info("permissions requested")
         except:
             Logger.info("possibly not android")
 
