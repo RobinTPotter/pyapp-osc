@@ -1,4 +1,4 @@
-import os
+   import os
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
@@ -89,7 +89,7 @@ class OSC(App):
             t = self.hey(self.texts)
             if len(t)>0:
                 b = Button(text=t)
-                b.nodeID = 0
+                b._nodeID = 0
                 b.bind(on_press=self.on_button)
                 b.bind(on_release=self.on_release_button)
                 bottom.add_widget(b)
@@ -110,7 +110,7 @@ class OSC(App):
                 Permission.WRITE_EXTERNAL_STORAGE,
             ])
         except:
-            print("possibly not android")
+            Logger.info("possibly not android")
 
     def get_config_file(self):
         parent = primary_external_storage_path() + "/Documents"
@@ -120,7 +120,7 @@ class OSC(App):
         self.config_file = self.get_config_file()
 
         if not os.path.exists(self.config_file):
-            print("no config make default")
+            Logger.info("no config make default")
             with open(self.config_file,"w") as f:
                 f.write("192.168.1.175\n")
                 f.write("57120\n")
@@ -169,7 +169,7 @@ class OSC(App):
             return
 
         button._last = now
-        button.nodeID = int(time() * 100) % 10 ** 9
+        button._nodeID = int(time() * 100) % 10 ** 9
 
         try:
             Logger.info(f"hi {button.text}")
@@ -182,7 +182,7 @@ class OSC(App):
                 daemon=True,
             ).start()
         except Exception as e:
-            print(e)
+            Logger.error(f"button down: {e}")
             button.background_normal = ""
             button.background_color = [1,0,0,1]
 
@@ -203,7 +203,7 @@ class OSC(App):
                 daemon=True,
             ).start()
         except Exception as e:
-            print(e)
+            Logger.error(f"button release {e}")
             button.background_normal = ""
             button.background_color = [1,0,0,1]
 
