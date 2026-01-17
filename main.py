@@ -5,7 +5,7 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from osc_build import send_osc_blank, send_osc_float
+from osc_build import *
 from threading import Thread
 from time import time
 from kivy.metrics import dp
@@ -175,9 +175,10 @@ class OSC(App):
             Logger.info(f"hi {button.text}")
             msg = button.text.split()
             address = msg.pop(0)
+            msg.insert(0,"pressed")
             Thread(
                 target = send_osc,
-                args = (self.ip, self.port, address, msg), #, [""]),
+                args = (self.ip, self.port, address, msg),
                 daemon=True,
             ).start()
         except Exception as e:
@@ -193,12 +194,12 @@ class OSC(App):
         button._uplast = now
         try:
             Logger.info(f"hi up {button.text}")
-#            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
+            msg = button.text.split()
+            address = msg.pop(0)
+            msg.insert(0,"release")
             Thread(
-                target = send_osc_blank
-todotodo        if button.nodeID > 0:
-,
-                args = (self.ip, self.port, button.text + "/release"), #, [""]),
+                target = send_osc,
+                args = (self.ip, self.port, address, msg),
                 daemon=True,
             ).start()
         except Exception as e:
