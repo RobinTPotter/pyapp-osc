@@ -92,6 +92,7 @@ class OSC(App):
             if len(t)>0:
                 b = Button(text=t)
                 b.bind(on_press=self.on_button)
+                b.bind(on_release=self.on_release_button)
                 bottom.add_widget(b)
             else:
                 Logger.info("blank")
@@ -177,6 +178,27 @@ class OSC(App):
             Thread(
                 target = send_osc_blank,
                 args = (self.ip, self.port, button.text), #, [""]),
+                daemon=True,
+            ).start()
+            #print(o)
+        except Exception as e:
+            print(e)
+            button.background_normal = ""
+            button.background_color = [1,0,0,1]
+
+    def on_release_button(self, button):
+        now = time()
+        if getattr(button, "_uplast", 0) + 0.2 > now:
+            return
+
+        button._uplast = now
+
+        try:
+            Logger.info(f"hi up {button.text}")
+#            o = oscAPI.sendMsg(f"{button.text}", dataArray=[""], ipAddr=self.ip, port=self.port)
+            Thread(
+                target = send_osc_blank,
+                args = (self.ip, self.port, button.text + "/release"), #, [""]),
                 daemon=True,
             ).start()
             #print(o)
