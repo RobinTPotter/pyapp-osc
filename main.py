@@ -48,18 +48,37 @@ class OSC(App):
 
     def rebuild_ui(self, dt):
         Logger.info(f"rebuild ui {dt}")
-        Window.clearcolor = (0, 0, 0, 1)
-        self.root.clear_widgets()
-        self.root = self.build()
+
+        self.get_config()
+        self.build_ui()
+
+        from kivy.core.window import Window
+        Window.canvas.ask_update()
 
     def hey(self,texts):
         return "" if len(texts)==0 else texts.pop(0)
 
     def build(self):
-        Logger.info("build")
+        Logger.info("build (initial)")
+
         self.get_config()
 
-        self.root = BoxLayout(orientation="vertical", spacing=5, padding=2)
+        # ROOT CREATED ONCE
+        self.root = BoxLayout(
+            orientation="vertical",
+            spacing=5,
+            padding=5,
+        )
+
+        # build UI contents
+        self.build_ui()
+
+        return self.root
+
+    def build_ui(self):
+        Logger.info("build_ui")
+
+        self.root.clear_widgets()
 
         very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
         self.ip_text = TextInput(text=str(self.ip).strip(), multiline=False, size_hint_x=5)
