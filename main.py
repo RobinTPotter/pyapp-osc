@@ -82,6 +82,7 @@ class OSC(App):
     def build_ui(self):
         Logger.info("build_ui")
 
+        self.get_config()
         self.root.clear_widgets()
 
         very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
