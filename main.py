@@ -33,8 +33,12 @@ except:
         if not os.path.exists("./Documents"): os.mkdir("./Documents")
         return "./"
 
-
-
+try:
+    from plyer import vibrator
+    can_vibrate = True
+except Exception as e:
+    Logger.info(f"no vibrate {e}")
+    can_vibrate = False
 
 class OSC(App):
 
@@ -205,6 +209,7 @@ class OSC(App):
                 args = (self.ip, self.port, address, msg),
                 daemon=True,
             ).start()
+            if can_vibrate: vibrator.vibrate(0.075)
         except Exception as e:
             Logger.error(f"button down: {e}")
             button.background_normal = ""
