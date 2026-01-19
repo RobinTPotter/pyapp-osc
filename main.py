@@ -77,6 +77,30 @@ class OSC(App):
 
         return self.root
 
+    def update_slider(self, s, value):
+        # callback on slider made by doslider
+        s.value = round(value,2)
+        s._companion.text=f"/param {s._param} {s.value}"
+        # see below
+        if not s._init: self.on_button(s._companion)
+        s._init = False
+
+    def doslider(self, param, min=0, max=1.0, value=0.5, step=0.1):
+        # function to create a slider and button combo, button attached to slider as
+        # _companion and _param is the name of the param which goes to the message
+        s = Slider(min=min, max=max, value=value, step=step, size_hint_x=5)
+        b = Button(size_hint_x=2)
+        b.bind(on_press=self.on_button)
+        s._param = param
+        s._companion = b
+        s.bind(value=self.update_slider)
+        s._init = True # flag for stopping on_button from firing for first drawing
+        self.update_slider(s, value)
+        l = BoxLayout(orientation="horizontal")
+        l.add_widget(b)
+        l.add_widget(s)
+        return l
+
     def build_ui(self):
         Logger.info("build_ui")
 
@@ -113,14 +137,10 @@ class OSC(App):
 
 
         top2 = BoxLayout(orientation="vertical")
-        s1 = Slider(min=0, max=1.0, value=0.5, step=0.1)
-        top2.add_widget(s1)
-        s2 = Slider(min=0, max=1.0, value=0.5, step=0.1)
-        top2.add_widget(s2)
-        s3 = Slider(min=0, max=1.0, value=0.5, step=0.1)
-        top2.add_widget(s3)
-        s4 = Slider(min=0, max=1.0, value=0.5, step=0.1)
-        top2.add_widget(s4)
+        for p in self.params:
+            _, param, mn, mx, v = p
+            top2.add_widget(self.doslider(param, min=float(mn), max=float(mx), value=float(v)))
+
         top_carousel.add_widget(top2)
 
 
@@ -173,6 +193,13 @@ class OSC(App):
                 f.write("57120\n")
                 for b in range(4): f.write(f"/voice/t{b}\n")
                 for b in range(16): f.write(f"/note {b+60}\n")
+                f.write(f"/param a1 0.0 1.0 0.5\n")
+                f.write(f"/param a2 0.0 1.0 0.5\n")
+                f.write(f"/param a3 0.0 1.0 0.5\n")
+                f.write(f"/param a4 0.0 1.0 0.5\n")
+                f.write(f"/param vibrato_freq 0.1 5.0 1.0\n")
+                f.write(f"/param vibrato_strength 0.0 1.0 0.5\n")
+                f.write(f"/param pulse_width 0.0 1.0 0.5\n")
 
             Logger.info("written fake config")
 
@@ -182,7 +209,9 @@ class OSC(App):
         self.ip = self.texts.pop(0)
         self.port = int(self.texts.pop(0))
 
-        self.texts = [t.strip() for t in self.texts]
+        inputs = self.texts
+        self.texts = [t.strip() for t in inputs if not "/param" in t]
+        self.params = [t.strip().split() for t in inputs if "/param" in t] #of the form /param name min max start
         Logger.info(self.texts)
 
 
