@@ -9,6 +9,8 @@ from osc_build import *
 from threading import Thread
 from time import time
 from kivy.metrics import dp
+from kivy.uix.carousel import Carousel
+
 
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -96,7 +98,9 @@ class OSC(App):
         self.root.add_widget(very_top)
         Logger.info("very_top set up")
 
-        top = GridLayout(cols=2, rows=2, size_hint_y=0.6, spacing=5, padding=2)
+        top_carousel = Carousel(direction='right', size_hint_y=0.6, )
+
+        top = GridLayout(cols=2, rows=2, spacing=5, padding=2)
         b1 = Button(text=self.hey(self.texts))
         b1.bind(on_press=self.on_button)
         b2 = Button(text=self.hey(self.texts))
@@ -109,7 +113,9 @@ class OSC(App):
         top.add_widget(b2)
         top.add_widget(b3)
         top.add_widget(b4)
-        self.root.add_widget(top)
+        top_carousel.add_widget(top)
+
+        self.root.add_widget(top_carousel)
         Logger.info("top set up")
 
         bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4, spacing=5, padding=2)
@@ -127,6 +133,9 @@ class OSC(App):
 
         self.root.add_widget(bottom)
         Logger.info("bottom set up")
+
+        self.ip = self.ip_text.text
+        self.port = int(self.port_text.text)
 
         return self.root
 
