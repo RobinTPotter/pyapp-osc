@@ -1,4 +1,5 @@
 import os
+from kivy.core.window import Window
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
@@ -10,12 +11,8 @@ from threading import Thread
 from time import time
 from kivy.metrics import dp
 from kivy.uix.carousel import Carousel
-
-
 from kivy.clock import Clock
 from kivy.core.window import Window
-
-
 import sys
 from kivy.logger import Logger
 
@@ -23,7 +20,6 @@ def excepthook(exctype, value, traceback):
     Logger.exception("Uncaught exception", exc_info=(exctype, value, traceback))
 
 sys.excepthook = excepthook
-
 
 try:
     from android.storage import primary_external_storage_path
@@ -58,7 +54,6 @@ class OSC(App):
         self.get_config()
         self.build_ui()
 
-        from kivy.core.window import Window
         Window.canvas.ask_update()
 
     def hey(self,texts):
@@ -114,6 +109,10 @@ class OSC(App):
         top.add_widget(b3)
         top.add_widget(b4)
         top_carousel.add_widget(top)
+
+
+
+
 
         self.root.add_widget(top_carousel)
         Logger.info("top set up")
