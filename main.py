@@ -2,6 +2,7 @@ import os
 from kivy.core.window import Window
 from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.uix.slider import Slider
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
@@ -111,7 +112,16 @@ class OSC(App):
         top_carousel.add_widget(top)
 
 
-
+        top2 = BoxLayout(orientation="vertical")
+        s1 = Slider(min=0, max=1.0, value=0.5, step=0.1)
+        top2.add_widget(s1)
+        s2 = Slider(min=0, max=1.0, value=0.5, step=0.1)
+        top2.add_widget(s2)
+        s3 = Slider(min=0, max=1.0, value=0.5, step=0.1)
+        top2.add_widget(s3)
+        s4 = Slider(min=0, max=1.0, value=0.5, step=0.1)
+        top2.add_widget(s4)
+        top_carousel.add_widget(top2)
 
 
         self.root.add_widget(top_carousel)
