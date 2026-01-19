@@ -8,7 +8,7 @@ version = 0.1
 requirements = python3,kivy,plyer
 orientation = portrait
 osx.kivy_version = 2.1.0
-android.permissions = INTERNET
+android.permissions = INTERNET,VIBRATE
 
 [buildozer]
 log_level = 1
