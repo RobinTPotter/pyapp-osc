@@ -1,0 +1,106 @@
+(
+OSCdef(\voice, { |msg|
+    var name = msg[1];
+    var freq = msg[2] ? 440;
+    var amp  = msg[3] ? 0.1;
+
+    Synth(name.asSymbol, [
+        \freq, freq,
+        \amp, amp
+    ]);
+}, "/voice");
+)
+
+
+(
+OSCdef(\voiceRouter, { |msg|
+    var path = msg[0];
+    var args = msg[1..];
+
+    // Path-based routing
+    if (path == "/voice/sine") {
+        Synth(\sine);
+    };
+
+    if (path == "/voice/saw") {
+        Synth(\saw);
+    };
+
+}, "/voice/*");
+)
+
+
+
+
+
+
+
+
+
+import socket, struct
+
+def osc_pad(b):
+    b += b'\x00'
+    while len(b) % 4 != 0:
+        b += b'\x00'
+    return b
+
+
+def build_osc(address, args):
+    msg = osc_pad(address.encode())
+
+    tags = ","
+    payload = b""
+
+    for a in args:
+        if isinstance(a, int):
+            tags += "i"
+            payload += struct.pack(">i", a)
+
+        elif isinstance(a, float):
+            tags += "f"
+            payload += struct.pack(">f", a)
+
+        elif isinstance(a, str):
+            tags += "s"
+            payload += osc_pad(a.encode())
+
+        else:
+            raise TypeError(f"Unsupported OSC arg: {a}")
+
+    msg += osc_pad(tags.encode())
+    msg += payload
+    return msg
+
+
+def send_osc(ip, port, address, args=None):
+    if args is None:
+        args = []
+
+    msg = build_osc(address, args)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.sendto(msg, (ip, port))
+    s.close()
+
+
+
+
+from kivy.app import App
+from kivy.uix.carousel import Carousel
+from kivy.uix.image import AsyncImage
+
+
+class CarouselApp(App):
+    def build(self):
+        carousel = Carousel(direction='right')
+        for i in range(10):
+            src = "http://placehold.it/480x270.png&text=slide-%d&.png" % i
+            image = AsyncImage(source=src, fit_mode="contain")
+            carousel.add_widget(image)
+        return carousel
+
+
+CarouselApp().run()
+
+
+
