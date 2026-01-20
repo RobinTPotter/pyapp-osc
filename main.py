@@ -93,6 +93,7 @@ class OSC(App):
         b.text_size = (b.width, None)
         b.halign = "center"
         b.valign = "middle"
+        b.padding = dp(10)
 
         def bs(button, size):
             button.text_size = size
