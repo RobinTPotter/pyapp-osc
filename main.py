@@ -90,6 +90,15 @@ class OSC(App):
         # _companion and _param is the name of the param which goes to the message
         s = Slider(min=min, max=max, value=value, step=step, size_hint_x=5)
         b = Button(size_hint_x=2)
+        b.text_size = (b.width, None)
+        b.halign = "center"
+        b.valign = "middle"
+
+        def bs(button, size):
+            button.text_size = size
+
+        b.bind(size=bs)
+
         b.bind(on_press=self.on_button)
         s._param = param
         s._companion = b
