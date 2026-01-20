@@ -80,7 +80,8 @@ class OSC(App):
     def update_slider(self, s, value):
         # callback on slider made by doslider
         s.value = round(value,2)
-        s._companion.text=f"/param {s._param} {s.value}"
+        s._companion.text=f"{s._param} {s.value}"
+        s._companion._message=f"/param {s._param} {s.value}"
         # see below
         if not s._init: self.on_button(s._companion)
         s._init = False
@@ -101,6 +102,7 @@ class OSC(App):
         b.bind(size=bs)
 
         b.bind(on_press=self.on_button)
+        b._message = b.text
         s._param = param
         s._companion = b
         s.bind(value=self.update_slider)
@@ -132,12 +134,16 @@ class OSC(App):
 
         top = GridLayout(cols=2, rows=2, spacing=5, padding=2)
         b1 = Button(text=self.hey(self.texts))
+        b1._message = b1.text
         b1.bind(on_press=self.on_button)
         b2 = Button(text=self.hey(self.texts))
+        b2._message = b2.text
         b2.bind(on_press=self.on_button)
         b3 = Button(text=self.hey(self.texts))
+        b3._message = b3.text
         b3.bind(on_press=self.on_button)
         b4 = Button(text=self.hey(self.texts))
+        b4._message = b4.text
         b4.bind(on_press=self.on_button)
         top.add_widget(b1)
         top.add_widget(b2)
@@ -162,6 +168,7 @@ class OSC(App):
             t = self.hey(self.texts)
             if len(t)>0:
                 b = Button(text=t)
+                b._message = t
                 b._nodeID = 0
                 b.bind(on_press=self.on_button)
                 b.bind(on_release=self.on_release_button)
@@ -259,7 +266,7 @@ class OSC(App):
 
         try:
             Logger.info(f"hi {button.text}")
-            msg = button.text.split()
+            msg = button._message.split()
             address = msg.pop(0)
             msg.insert(0,"pressed")
             Thread(
