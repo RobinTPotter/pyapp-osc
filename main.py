@@ -83,6 +83,7 @@ class OSC(App):
         s._companion.text=f"{s._param} {s.value}"
         s._companion._message=f"/param {s._param} {s.value}"
         # see below
+        s._companion._was_clicked = False
         if not s._init: self.on_button(s._companion)
         s._init = False
 
@@ -104,6 +105,7 @@ class OSC(App):
         b.bind(on_press=self.on_button)
         b._message = b.text
         s._param = param
+        b._param = f"/param {param} {min} {max} {value}" # yes, i know this is how it arrived
         s._companion = b
         s.bind(value=self.update_slider)
         s._init = True # flag for stopping on_button from firing for first drawing
@@ -237,19 +239,7 @@ class OSC(App):
             self.ip = self.ip_text.text
             self.port = int(self.port_text.text)
             Logger.info(f"set {self.ip} {self.port}")
-            with open(self.config_file,"r") as f:
-                data = f.readlines()
-
-            data = [t.strip() for t in data]
-            data.pop(0)
-            data.pop(0)
-            data.insert(0, self.port)
-            data.insert(0, self.ip)
-            Logger.info("writing new port ip")
-
-            with open(self.config_file,"w") as f:
-                for d in data:
-                    f.write(f"{str(d).strip()}\n")
+            self.rewrite_config()
 
         except Exception as e:
             Logger.error(e)
@@ -263,6 +253,7 @@ class OSC(App):
 
         button._last = now
         button._nodeID = int(time() * 100) % 10 ** 9
+        was_clicked = getattr(button, "_was_clicked", True)
 
         try:
             Logger.info(f"hi {button.text}")
@@ -275,10 +266,41 @@ class OSC(App):
                 daemon=True,
             ).start()
             if can_vibrate: vibrator.vibrate(0.075)
+            is_param = getattr(button, "_param", None)
+            Logger.info(f"is_param {is_param}")
+            if is_param and was_clicked:
+                self.rewrite_config([(is_param, msg[-1])])
+                
+
         except Exception as e:
             Logger.error(f"button down: {e}")
             button.background_normal = ""
             button.background_color = [1,0,0,1]
+
+        if not was_clicked:
+            button._was_clicked = True
+
+    def rewrite_config(self, overwrites=[]):
+            Logger.info("Rewriting config")
+
+            with open(self.config_file,"r") as f:
+                data = f.readlines()
+
+            data = [t.strip() for t in data]
+            data.pop(0)
+            data.pop(0)
+            data.insert(0, self.port)
+            data.insert(0, self.ip)
+            Logger.info("writing new port ip")
+
+            with open(self.config_file,"w") as f:
+                for d in data:
+                    d = str(d).strip()
+                    for o in overwrites:
+                        if o[0].split()[1] in d:
+                            d = f"{" ".join(o[0].split()[:-1])} {o[1]}"
+                    print(f"Writing: {d}")
+                    f.write(f"{d}\n")
 
     def on_release_button(self, button):
         now = time()
