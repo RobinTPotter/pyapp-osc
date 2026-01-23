@@ -14,5 +14,5 @@ android.adaptive_icon.background = icon_background.png
 presplash.filename = presplash.png
 
 [buildozer]
-log_level = 1
+log_level = 2
 warn_on_root = 1
