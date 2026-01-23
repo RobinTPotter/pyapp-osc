@@ -298,7 +298,7 @@ class OSC(App):
                     d = str(d).strip()
                     for o in overwrites:
                         if o[0].split()[1] in d:
-                            d = f"{" ".join(o[0].split()[:-1])} {o[1]}"
+                            d = f"{' '.join(o[0].split()[:-1])} {o[1]}"
                     print(f"Writing: {d}")
                     f.write(f"{d}\n")
 
