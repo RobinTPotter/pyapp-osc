@@ -153,14 +153,25 @@ class OSC(App):
         top.add_widget(b4)
         top_carousel.add_widget(top)
 
+        param_groups = []
+        params = [p for p in self.params]
+        i=[elem[0] for elem in enumerate(params) if str(elem[1][0]).startswith("#")]
+        for ii in range(len(i)):
+            hello = params[:i[ii]]
+            param_groups.append(hello)
+            del params[:i[ii]+1]
 
-        top2 = BoxLayout(orientation="vertical")
-        for p in self.params:
-            _, param, mn, mx, v = p
-            top2.add_widget(self.doslider(param, min=float(mn), max=float(mx), value=float(v)))
+        param_group.append(params)
+        Logger.info(param_groups)
 
-        top_carousel.add_widget(top2)
+        for params in param_groups:
+            top2 = BoxLayout(orientation="vertical")
+            while len(params)>0:
+                p = params.pop()
+                _, param, mn, mx, v = p
+                top2.add_widget(self.doslider(param, min=float(mn), max=float(mx), value=float(v)))
 
+            top_carousel.add_widget(top2)
 
         self.root.add_widget(top_carousel)
         Logger.info("top set up")
