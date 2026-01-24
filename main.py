@@ -167,7 +167,7 @@ class OSC(App):
         for params in param_groups:
             top2 = BoxLayout(orientation="vertical")
             while len(params)>0:
-                p = params.pop()
+                p = params.pop(0)
                 _, param, mn, mx, v = p
                 top2.add_widget(self.doslider(param, min=float(mn), max=float(mx), value=float(v)))
 
