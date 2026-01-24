@@ -156,14 +156,21 @@ class OSC(App):
         param_groups = []
         params = [p for p in self.params]
         i = [elem[0] for elem in enumerate(params) if str(elem[1][0]).startswith("#")]
-        # get the difference rather tgan the "running total"
-        i = [i[0]] + [ii[1]-i[ii[0]-1] for ii in enumerate(i) if ii[0]>0]
-        for ii in range(len(i)):
-            hello = params[:i[ii]]
-            param_groups.append(hello)
-            del params[:i[ii]+1]
+        Logger.info(f"param splits {i}")
+        # get the difference rather than the "running total"
+        if len(i)>1:
+            i = [i[0]] + [ii[1]-i[ii[0]-1] for ii in enumerate(i) if ii[0]>0]
 
-        param_groups.append(params)
+        if len(i)>0:
+            for ii in range(len(i)):
+                hello = params[:i[ii]]
+                param_groups.append(hello)
+                del params[:i[ii]+1]
+
+            param_groups.append(params)
+        else:
+            param_groups.append(params)
+
         Logger.info(param_groups)
 
         for params in param_groups:
