@@ -159,7 +159,7 @@ class OSC(App):
         Logger.info(f"param splits {i}")
         # get the difference rather than the "running total"
         if len(i)>1:
-            i = [i[0]] + [ii[1]-i[ii[0]-1] for ii in enumerate(i) if ii[0]>0]
+            i = [i[0]] + [ii[1]-i[ii[0]] for ii in enumerate(i) if ii[0]>0]
 
         if len(i)>0:
             for ii in range(len(i)):
