@@ -1,7 +1,11 @@
 name: Build Kivy Android APK
 
-on: [push]
-
+on:
+  push:
+    paths-ignore:
+      - 'readme.md'
+      - 'README.md'
+      
 jobs:
   build-android:
     runs-on: ubuntu-latest
