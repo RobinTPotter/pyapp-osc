@@ -25,3 +25,5 @@ when the corresponding button is pressed. parameters are read/written to config 
 `/param name min max value`
 
 param message has a special meaning, all other lines add a button in top or bottom grid
+
+adding a #/param line will make a carousel split such that subsequent parameters will appear on the next screen.
