@@ -162,7 +162,7 @@ class OSC(App):
             i = [i[0]] + [ii[1]-i[ii[0]-1]-1 for ii in enumerate(i) if ii[0]>0]
 
         if len(i)>0:
-            for ii in i
+            for ii in i:
                 hello = params[:ii]
                 param_groups.append(hello)
                 del params[:ii+1]
