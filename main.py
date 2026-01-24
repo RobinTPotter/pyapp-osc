@@ -161,7 +161,7 @@ class OSC(App):
             param_groups.append(hello)
             del params[:i[ii]+1]
 
-        param_group.append(params)
+        param_groups.append(params)
         Logger.info(param_groups)
 
         for params in param_groups:
