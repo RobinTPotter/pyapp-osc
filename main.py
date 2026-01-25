@@ -45,6 +45,53 @@ class OSC(App):
         Logger.info("pause called")
         return True
 
+    def on_start(self):
+        try:
+            from android.permissions import request_permissions, Permission
+            request_permissions([
+                Permission.READ_EXTERNAL_STORAGE,
+                Permission.WRITE_EXTERNAL_STORAGE,
+            ])
+            Logger.info("permissions requested")
+        except:
+            Logger.info("possibly not android")
+
+    def get_config_file(self):
+        parent = primary_external_storage_path() + "/Documents"
+        return parent + "/osc_config.ini"
+
+    def get_config(self):
+        self.config_file = self.get_config_file()
+
+        if not os.path.exists(self.config_file):
+            Logger.info("no config make default")
+            with open(self.config_file,"w") as f:
+                f.write("192.168.1.175\n")
+                f.write("57120\n")
+                for b in range(4): f.write(f"/voice/t{b}\n")
+                for b in range(16): f.write(f"/note {b+60}\n")
+                f.write(f"/param a1 0.0 1.0 0.5\n")
+                f.write(f"/param a2 0.0 1.0 0.5\n")
+                f.write(f"/param a3 0.0 1.0 0.5\n")
+                f.write(f"/param a4 0.0 1.0 0.5\n")
+                f.write(f"/param vibrato_freq 0.1 5.0 1.0\n")
+                f.write(f"/param vibrato_strength 0.0 1.0 0.5\n")
+                f.write(f"/param pulse_width 0.0 1.0 0.5\n")
+
+            Logger.info("written fake config")
+
+        with open(self.config_file,"r") as f:
+            self.texts = f.readlines()
+
+        self.ip = self.texts.pop(0)
+        self.port = int(self.texts.pop(0))
+
+        inputs = self.texts
+        self.texts = [t.strip() for t in inputs if not "/param" in t]
+        self.params = [t.strip().split() for t in inputs if "/param" in t] #of the form /param name min max start
+        Logger.info(self.texts)
+
+
     def on_resume(self):
         Logger.info("on resume")
         Clock.schedule_once(self.rebuild_ui, 0.5)
@@ -134,23 +181,17 @@ class OSC(App):
 
         top_carousel = Carousel(direction='right', size_hint_y=0.6, )
 
-        top = GridLayout(cols=2, rows=2, spacing=5, padding=2)
-        b1 = Button(text=self.hey(self.texts))
-        b1._message = b1.text
-        b1.bind(on_press=self.on_button)
-        b2 = Button(text=self.hey(self.texts))
-        b2._message = b2.text
-        b2.bind(on_press=self.on_button)
-        b3 = Button(text=self.hey(self.texts))
-        b3._message = b3.text
-        b3.bind(on_press=self.on_button)
-        b4 = Button(text=self.hey(self.texts))
-        b4._message = b4.text
-        b4.bind(on_press=self.on_button)
-        top.add_widget(b1)
-        top.add_widget(b2)
-        top.add_widget(b3)
-        top.add_widget(b4)
+        top = GridLayout(cols=2, rows=4, spacing=5, padding=2)
+        for n in range(8):
+            txt = self.hey(self.texts)
+            if len(txt)==0:
+                top.add_widget(Widget())
+            else:
+                b1 = Button(text=txt)
+                b1._message = b1.text
+                b1.bind(on_press=self.on_button)
+                top.add_widget(b1)
+
         top_carousel.add_widget(top)
 
         param_groups = []
@@ -185,8 +226,8 @@ class OSC(App):
         self.root.add_widget(top_carousel)
         Logger.info("top set up")
 
-        bottom = GridLayout(cols=4, rows=4, size_hint_y=0.4, spacing=5, padding=2)
-        for i in range(16):
+        bottom = GridLayout(cols=4, rows=5, size_hint_y=0.4, spacing=5, padding=2)
+        for i in range(20):
             t = self.hey(self.texts)
             if len(t)>0:
                 b = Button(text=t)
@@ -207,51 +248,6 @@ class OSC(App):
 
         return self.root
 
-    def on_start(self):
-        try:
-            from android.permissions import request_permissions, Permission
-            request_permissions([
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE,
-            ])
-            Logger.info("permissions requested")
-        except:
-            Logger.info("possibly not android")
-
-    def get_config_file(self):
-        parent = primary_external_storage_path() + "/Documents"
-        return parent + "/osc_config.ini"
-
-    def get_config(self):
-        self.config_file = self.get_config_file()
-
-        if not os.path.exists(self.config_file):
-            Logger.info("no config make default")
-            with open(self.config_file,"w") as f:
-                f.write("192.168.1.175\n")
-                f.write("57120\n")
-                for b in range(4): f.write(f"/voice/t{b}\n")
-                for b in range(16): f.write(f"/note {b+60}\n")
-                f.write(f"/param a1 0.0 1.0 0.5\n")
-                f.write(f"/param a2 0.0 1.0 0.5\n")
-                f.write(f"/param a3 0.0 1.0 0.5\n")
-                f.write(f"/param a4 0.0 1.0 0.5\n")
-                f.write(f"/param vibrato_freq 0.1 5.0 1.0\n")
-                f.write(f"/param vibrato_strength 0.0 1.0 0.5\n")
-                f.write(f"/param pulse_width 0.0 1.0 0.5\n")
-
-            Logger.info("written fake config")
-
-        with open(self.config_file,"r") as f:
-            self.texts = f.readlines()
-
-        self.ip = self.texts.pop(0)
-        self.port = int(self.texts.pop(0))
-
-        inputs = self.texts
-        self.texts = [t.strip() for t in inputs if not "/param" in t]
-        self.params = [t.strip().split() for t in inputs if "/param" in t] #of the form /param name min max start
-        Logger.info(self.texts)
 
 
     def set_connect(self, button):
