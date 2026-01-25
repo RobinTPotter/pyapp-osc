@@ -168,7 +168,12 @@ class OSC(App):
         self.get_config()
         self.root.clear_widgets()
 
-        very_top = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(30))
+        very_top = BoxLayout(
+            orientation="horizontal",
+            size_hint_y=None,
+            height=dp(28)
+        )
+
         self.ip_text = TextInput(text=str(self.ip).strip(), multiline=False, size_hint_x=5)
         self.port_text = TextInput(text=str(self.port).strip(), multiline=False, size_hint_x=2)
         setme = Button(text="Set")
