@@ -174,8 +174,8 @@ class OSC(App):
             height=dp(28)
         )
 
-        self.ip_text = TextInput(text=str(self.ip).strip(), multiline=False, size_hint_x=5)
-        self.port_text = TextInput(text=str(self.port).strip(), multiline=False, size_hint_x=2)
+        self.ip_text = TextInput(text=str(self.ip).strip(), multiline=False, size_hint_x=5, halign="center")
+        self.port_text = TextInput(text=str(self.port).strip(), multiline=False, size_hint_x=2, halign="center")
         setme = Button(text="Set")
         setme.bind(on_press=self.set_connect)
         very_top.add_widget(self.ip_text)
