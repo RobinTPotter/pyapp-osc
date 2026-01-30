@@ -17,6 +17,48 @@ from kivy.core.window import Window
 import sys
 from kivy.logger import Logger
 
+
+
+# SAFHelper — Android Storage Access Framework folder picker
+from jnius import autoclass, cast
+from android import activity
+
+class SAFHelper:
+    def __init__(self):
+        self.activity = autoclass('org.kivy.android.PythonActivity').mActivity
+        self.Intent = autoclass('android.content.Intent')
+        self.Uri = autoclass('android.net.Uri')
+        self.request_code = 1001
+        self.picked_uri = None
+        activity.bind(on_activity_result=self.on_result)
+
+    def ask_for_folder(self):
+        """Launch the folder picker."""
+        intent = self.Intent(self.Intent.ACTION_OPEN_DOCUMENT_TREE)
+        self.activity.startActivityForResult(intent, self.request_code)
+
+    def on_result(self, requestCode, resultCode, intent):
+        """Called when folder is picked."""
+        if requestCode == self.request_code and intent:
+            uri = intent.getData()
+            if uri:
+                # persist read+write access
+                flags = (self.Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                         self.Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                self.activity.getContentResolver().takePersistableUriPermission(uri, flags)
+                self.picked_uri = uri.toString()
+
+    def has_permission(self):
+        """Do we already have a persisted folder URI?"""
+        return bool(self.picked_uri)
+
+    def get_uri(self):
+        """Return the persisted URI string (if any)."""
+        return self.picked_uri
+
+
+
+
 def excepthook(exctype, value, traceback):
     Logger.exception("Uncaught exception", exc_info=(exctype, value, traceback))
 
@@ -39,28 +81,102 @@ except Exception as e:
     Logger.info(f"no vibrate {e}")
     can_vibrate = False
 
+
+from kivy.storage.jsonstore import JsonStore
+
+# store for saved SAF folder
+saf_store = JsonStore("saf_store.json")
+saf = SAFHelper()
+
 class OSC(App):
+
 
     def on_pause(self):
         Logger.info("pause called")
         return True
 
     def on_start(self):
+
         try:
-            from android.permissions import request_permissions, Permission
-            request_permissions([
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE,
-            ])
-            Logger.info("permissions requested")
-        except:
-            Logger.info("possibly not android")
+            # If we already saved a folder URI, load it
+            if saf_store.exists("folder"):
+                saf.picked_uri = saf_store.get("folder")["uri"]
+
+            # If no folder yet, ask user to pick one
+            if not saf.has_permission():
+                saf.ask_for_folder()
+            else:
+                Logger.info("Already have SAF folder access")
+
+        except Exception as e:
+            Logger.info(f"not android storage SAF: {e}")
+
+
+#        try:
+#            from android.permissions import request_permissions, Permission
+##            request_permissions([
+#                Permission.READ_EXTERNAL_STORAGE,
+#                Permission.WRITE_EXTERNAL_STORAGE,
+#            ])
+#            Logger.info("permissions requested")
+#        except:
+#            Logger.info("possibly not android")
+
+    def on_resume(self):
+        # if SAFHelper got a picked folder, save it
+        if saf.picked_uri and not saf_store.exists("folder"):
+            saf_store.put("folder", uri=saf.picked_uri)
+            Logger.info(f"Saved SAF folder URI: {saf.picked_uri}")
+
+        Clock.schedule_once(self.rebuild_ui, 0.5)
+
+
+    from jnius import autoclass
+
+    def open_saf_file(uri_string, mode="r"):
+        """Open a URI from SAF for reading or writing."""
+        Uri = autoclass("android.net.Uri").parse(uri_string)
+        resolver = saf.activity.getContentResolver()
+        stream = resolver.openInputStream(Uri) if "r" in mode else resolver.openOutputStream(Uri, "w")
+        return stream
+
+    def get_config_saf_path():
+        """Return a file-like URI for 'osc_config.ini' in the chosen folder."""
+        return saf.get_uri() + "/osc_config.ini"
+
 
     def get_config_file(self):
         parent = primary_external_storage_path() + "/Documents"
         return parent + "/osc_config.ini"
 
     def get_config(self):
+        if not saf.has_permission():
+            Logger.error("No shared folder granted yet!")
+            return
+
+        cfg_uri = get_config_saf_path()
+
+        try:
+            # try opening existing
+            with open_saf_file(cfg_uri, "r") as f:
+                lines = f.read().splitlines()
+        except Exception:
+            # make default
+            with open_saf_file(cfg_uri, "w") as f:
+                f.write("192.168.1.175\n57120\n")
+                for b in range(4): f.write(f"/voice/t{b}\n")
+                for b in range(16): f.write(f"/note {b+60}\n")
+            with open_saf_file(cfg_uri, "r") as f:
+                lines = f.read().splitlines()
+
+        self.texts = [t.strip() for t in lines[2:]]
+        self.ip = lines[0]
+        self.port = int(lines[1])
+
+
+
+
+    def old_get_config(self):
         self.config_file = self.get_config_file()
 
         if not os.path.exists(self.config_file):
@@ -92,9 +208,9 @@ class OSC(App):
         Logger.info(self.texts)
 
 
-    def on_resume(self):
-        Logger.info("on resume")
-        Clock.schedule_once(self.rebuild_ui, 0.5)
+#    def on_resume(self):
+#        Logger.info("on resume")
+#        Clock.schedule_once(self.rebuild_ui, 0.5)
 
     def rebuild_ui(self, dt):
         Logger.info(f"rebuild ui {dt}")
