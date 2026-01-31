@@ -38,6 +38,25 @@ class SAFHelper:
         self.activity.startActivityForResult(intent, self.request_code)
 
     def on_result(self, requestCode, resultCode, intent):
+        Logger.info("SAF on result")
+        if requestCode == self.request_code and intent:
+            uri = intent.getData()
+            if not uri:
+                return
+
+            flags = (self.Intent.FLAG_GRANT_READ_URI_PERMISSION |
+                     self.Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+
+            self.activity.getContentResolver().takePersistableUriPermission(uri, flags)
+            self.picked_uri = uri.toString()
+
+            from kivy.app import App
+            app = App.get_running_app()
+            if app:
+                app.on_storage_ready()
+
+
+    def old_on_result(self, requestCode, resultCode, intent):
         """Called when folder is picked."""
         if requestCode == self.request_code and intent:
             uri = intent.getData()
@@ -90,12 +109,48 @@ saf = SAFHelper()
 
 class OSC(App):
 
+    storage_ready = False
+    ui_built = False
+
+    def on_storage_ready(self):
+        if self.storage_ready:
+            return
+
+        from kivy.logger import Logger
+        Logger.info("SAF storage ready")
+
+        self.storage_ready = True
+
+        if not saf_store.exists("folder"):
+            saf_store.put("folder", uri=saf.picked_uri)
+
+        # NOW it is safe to load config
+        self.get_config()
+
+        # NOW it is safe to build UI
+        self.build_ui()
+
+
 
     def on_pause(self):
         Logger.info("pause called")
         return True
 
     def on_start(self):
+        from kivy.logger import Logger
+
+        if saf_store.exists("folder"):
+            saf.picked_uri = saf_store.get("folder")["uri"]
+
+        if not saf.has_permission():
+            Logger.info("No SAF folder yet — requesting")
+            saf.ask_for_folder()
+        else:
+            self.on_storage_ready()
+
+
+
+    def old_on_start(self):
 
         try:
             # If we already saved a folder URI, load it
@@ -279,6 +334,10 @@ class OSC(App):
         return l
 
     def build_ui(self):
+        if not self.storage_ready:
+            Logger.info("Storage not ready")
+            return
+
         Logger.info("build_ui")
 
         self.get_config()
