@@ -271,7 +271,7 @@ class OSC(App):
         )
 
     def read_config(self):
-        doc = get_config_document()
+        doc = self.get_config_document()
         resolver = saf.activity.getContentResolver()
 
         stream = resolver.openInputStream(doc.getUri())
@@ -281,7 +281,7 @@ class OSC(App):
         return data.splitlines()
 
     def write_config(self,text):
-        doc = get_config_document()
+        doc = self.get_config_document()
         resolver = saf.activity.getContentResolver()
 
         stream = resolver.openOutputStream(doc.getUri(), "w")
