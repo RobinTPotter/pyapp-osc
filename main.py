@@ -21,23 +21,6 @@ from android import activity
 
 from kivy.storage.jsonstore import JsonStore
 
-# store for saved SAF folder
-saf_store = JsonStore("saf_store.json")
-saf = SAFHelper()
-
-DocumentFile = autoclass(
-    "androidx.documentfile.provider.DocumentFile"
-)
-Uri = autoclass("android.net.Uri")
-
-
-def get_root_document():
-    uri = Uri.parse(saf.picked_uri)
-    return DocumentFile.fromTreeUri(
-        saf.activity,
-        uri
-    )
-
 class SAFHelper:
     def __init__(self):
         self.activity = autoclass('org.kivy.android.PythonActivity').mActivity
@@ -89,6 +72,23 @@ class SAFHelper:
     def get_uri(self):
         """Return the persisted URI string (if any)."""
         return self.picked_uri
+
+# store for saved SAF folder
+saf_store = JsonStore("saf_store.json")
+saf = SAFHelper()
+
+DocumentFile = autoclass(
+    "androidx.documentfile.provider.DocumentFile"
+)
+Uri = autoclass("android.net.Uri")
+
+
+def get_root_document():
+    uri = Uri.parse(saf.picked_uri)
+    return DocumentFile.fromTreeUri(
+        saf.activity,
+        uri
+    )
 
 
 
