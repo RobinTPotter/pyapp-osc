@@ -188,14 +188,14 @@ class OSC(App):
 
     from jnius import autoclass
 
-    def open_saf_file(uri_string, mode="r"):
+    def open_saf_file(self, uri_string, mode="r"):
         """Open a URI from SAF for reading or writing."""
         Uri = autoclass("android.net.Uri").parse(uri_string)
         resolver = saf.activity.getContentResolver()
         stream = resolver.openInputStream(Uri) if "r" in mode else resolver.openOutputStream(Uri, "w")
         return stream
 
-    def get_config_saf_path():
+    def get_config_saf_path(self):
         """Return a file-like URI for 'osc_config.ini' in the chosen folder."""
         return saf.get_uri() + "/osc_config.ini"
 
@@ -209,19 +209,19 @@ class OSC(App):
             Logger.error("No shared folder granted yet!")
             return
 
-        cfg_uri = get_config_saf_path()
+        cfg_uri = self.get_config_saf_path()
 
         try:
             # try opening existing
-            with open_saf_file(cfg_uri, "r") as f:
+            with self.open_saf_file(cfg_uri, "r") as f:
                 lines = f.read().splitlines()
         except Exception:
             # make default
-            with open_saf_file(cfg_uri, "w") as f:
+            with self.open_saf_file(cfg_uri, "w") as f:
                 f.write("192.168.1.175\n57120\n")
                 for b in range(4): f.write(f"/voice/t{b}\n")
                 for b in range(16): f.write(f"/note {b+60}\n")
-            with open_saf_file(cfg_uri, "r") as f:
+            with self.open_saf_file(cfg_uri, "r") as f:
                 lines = f.read().splitlines()
 
         self.texts = [t.strip() for t in lines[2:]]
