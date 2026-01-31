@@ -16,12 +16,27 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 import sys
 from kivy.logger import Logger
-
-
-
-# SAFHelper — Android Storage Access Framework folder picker
 from jnius import autoclass, cast
 from android import activity
+
+from kivy.storage.jsonstore import JsonStore
+
+# store for saved SAF folder
+saf_store = JsonStore("saf_store.json")
+saf = SAFHelper()
+
+DocumentFile = autoclass(
+    "androidx.documentfile.provider.DocumentFile"
+)
+Uri = autoclass("android.net.Uri")
+
+
+def get_root_document():
+    uri = Uri.parse(saf.picked_uri)
+    return DocumentFile.fromTreeUri(
+        saf.activity,
+        uri
+    )
 
 class SAFHelper:
     def __init__(self):
@@ -101,11 +116,6 @@ except Exception as e:
     can_vibrate = False
 
 
-from kivy.storage.jsonstore import JsonStore
-
-# store for saved SAF folder
-saf_store = JsonStore("saf_store.json")
-saf = SAFHelper()
 
 class OSC(App):
 
@@ -205,6 +215,24 @@ class OSC(App):
         return parent + "/osc_config.ini"
 
     def get_config(self):
+        lines = self.read_config()
+
+        if not lines:
+            self.write_config(
+                "192.168.1.175\n"
+                "57120\n"
+                "/voice/t0\n"
+                "/note 60\n"
+            )
+            lines = self.read_config()
+
+        self.ip = lines[0]
+        self.port = int(lines[1])
+        self.texts = [l.strip() for l in lines[2:]]
+
+
+
+    def older_get_config(self):
         if not saf.has_permission():
             Logger.error("No shared folder granted yet!")
             return
@@ -229,6 +257,36 @@ class OSC(App):
         self.port = int(lines[1])
 
 
+    def get_config_document(self):
+        root = get_root_document()
+
+        doc = root.findFile("osc_config.ini")
+        if doc:
+            return doc
+
+        # create if missing
+        return root.createFile(
+            "text/plain",
+            "osc_config.ini"
+        )
+
+    def read_config(self):
+        doc = get_config_document()
+        resolver = saf.activity.getContentResolver()
+
+        stream = resolver.openInputStream(doc.getUri())
+        data = stream.read().decode("utf-8")
+        stream.close()
+
+        return data.splitlines()
+
+    def write_config(self,text):
+        doc = get_config_document()
+        resolver = saf.activity.getContentResolver()
+
+        stream = resolver.openOutputStream(doc.getUri(), "w")
+        stream.write(text.encode("utf-8"))
+        stream.close()
 
 
     def old_get_config(self):
