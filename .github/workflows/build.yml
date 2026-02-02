@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup consistent debug keystore
+        run: |
+          mkdir -p ~/.android
+          cp debug.keystore ~/.android/debug.keystore
       - name: Build with Buildozer
         uses: n8marti/buildozer-action@fix-user-doesnt-exist
         id: buildozer
