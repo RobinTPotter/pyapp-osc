@@ -29,7 +29,7 @@ except:
     Logger.info("non android storage")
     def primary_external_storage_path():
         import os
-        if not os.path.exists("./Documents"): os.mkdir("./Documents")
+        if not os.path.exists("./Download"): os.mkdir("./Download")
         return "./"
 
 try:
@@ -57,7 +57,7 @@ class OSC(App):
             Logger.info("possibly not android")
 
     def get_config_file(self):
-        parent = primary_external_storage_path() + "/Documents"
+        parent = primary_external_storage_path() + "/Download"
         return parent + "/osc_config.ini"
 
     def get_config(self):
