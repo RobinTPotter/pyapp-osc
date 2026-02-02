@@ -12,6 +12,11 @@ android.permissions = INTERNET,VIBRATE
 android.adaptive_icon.foreground = icon_foreground.png
 android.adaptive_icon.background = icon_background.png
 presplash.filename = presplash.png
+android.debug_artifact = apk
+android.debug_keystore = ./debug.keystore
+android.debug_keystore_passwd = android
+android.debug_keyalias_passwd = android
+android.debug_keyalias = androiddebugkey
 
 [buildozer]
 log_level = 2
