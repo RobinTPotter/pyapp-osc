@@ -180,10 +180,16 @@ class OSC(App):
         self.port_text.height = self.port_text.line_height
         setme = Button(text="Set")
         setme.bind(on_press=self.set_connect)
-        very_top.add_widget(self.ip_text)
-        very_top.add_widget(self.port_text)
-        very_top.add_widget(setme)
-        self.root.add_widget(very_top)
+
+        export_btn = Button(text="↓", size_hint_x=0.5) # or "Export" 
+        export_btn.bind(on_press=self.export_config) 
+        import_btn = Button(text="↑", size_hint_x=0.5) # or "Import"
+        import_btn.bind(on_press=self.import_config)
+
+        very_top.add_widget(self.ip_text) 
+        very_top.add_widget(self.port_text) 
+        very_top.add_widget(setme) 
+        self.root.add_widget(very_top) 
         Logger.info("very_top set up")
 
         top_carousel = Carousel(direction='right', size_hint_y=0.6, )
@@ -293,7 +299,6 @@ class OSC(App):
             Logger.info(f"is_param {is_param}")
             if is_param and was_clicked:
                 self.rewrite_config([(is_param, msg[-1])])
-                
 
         except Exception as e:
             Logger.error(f"button down: {e}")
@@ -345,6 +350,52 @@ class OSC(App):
             Logger.error(f"button release {e}")
             button.background_normal = ""
             button.background_color = [1,0,0,1]
+
+
+    def export_config(self, button):
+        """Export config to Download folder with timestamp"""
+        try:
+            import shutil
+            from datetime import datetime
+
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            download_path = primary_external_storage_path() + f"/Download/osc_config_{timestamp}.ini"
+
+            shutil.copy(self.config_file, download_path)
+            Logger.info(f"Exported to {download_path}")
+
+            # Visual feedback
+            button.text = "✓"
+            Clock.schedule_once(lambda dt: setattr(button, 'text', '↓'), 1.5)
+            if can_vibrate: vibrator.vibrate(0.1)
+
+        except Exception as e:
+            Logger.error(f"Export failed: {e}")
+            button.background_color = [1,0,0,1]
+
+    def import_config(self, button):
+        """Import config using file picker"""
+        try:
+            from plyer import filechooser
+            filechooser.open_file(
+                on_selection=self.handle_import,
+                filters=["*.ini"]
+            )
+        except Exception as e:
+            Logger.error(f"Import picker failed: {e}")
+            button.background_color = [1,0,0,1]
+
+    def handle_import(self, selection):
+        """Handle selected file from picker"""
+        if selection:
+            try:
+                import shutil
+                shutil.copy(selection[0], self.config_file)
+                Logger.info(f"Imported from {selection[0]}")
+                self.rebuild_ui(0)
+                if can_vibrate: vibrator.vibrate(0.1)
+            except Exception as e:
+                Logger.error(f"Import copy failed: {e}")
 
 
 if __name__ == '__main__':
