@@ -189,6 +189,8 @@ class OSC(App):
         very_top.add_widget(self.ip_text) 
         very_top.add_widget(self.port_text) 
         very_top.add_widget(setme) 
+        very_top.add_widget(import_btn) 
+        very_top.add_widget(export_btn) 
         self.root.add_widget(very_top) 
         Logger.info("very_top set up")
 
