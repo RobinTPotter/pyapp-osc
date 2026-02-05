@@ -57,8 +57,8 @@ class OSC(App):
             Logger.info("possibly not android")
 
     def get_config_file(self):
-        parent = primary_external_storage_path() + "/Download"
-        return parent + "/osc_config.ini"
+        # Internal storage - bulletproof
+        return os.path.join(self.user_data_dir, "osc_config.ini")
 
     def get_config(self):
         self.config_file = self.get_config_file()
@@ -181,9 +181,9 @@ class OSC(App):
         setme = Button(text="Set")
         setme.bind(on_press=self.set_connect)
 
-        export_btn = Button(text="↓", size_hint_x=0.5) # or "Export" 
+        export_btn = Button(text="E", size_hint_x=0.5) # or "Export" 
         export_btn.bind(on_press=self.export_config) 
-        import_btn = Button(text="↑", size_hint_x=0.5) # or "Import"
+        import_btn = Button(text="I", size_hint_x=0.5) # or "Import"
         import_btn.bind(on_press=self.import_config)
 
         very_top.add_widget(self.ip_text) 
