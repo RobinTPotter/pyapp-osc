@@ -22,6 +22,69 @@ def excepthook(exctype, value, traceback):
 
 sys.excepthook = excepthook
 
+
+
+import os
+import shutil
+from kivy.utils import platform
+
+# We wrap the Android import so the desktop version doesn't crash
+if platform == 'android':
+    from androidstorage4kivy import SharedStorage
+
+def trigger_import(self):
+    """Call this from your 'Import' button."""
+    if platform == 'android':
+        # 📱 Android SAF logic
+        ss = SharedStorage()
+        ss.choose_content(on_finished=self.handle_android_selection)
+    else:
+        # 🖥️ Desktop Path logic
+        from plyer import filechooser
+        filechooser.open_file(on_selection=self.handle_desktop_selection)
+
+def handle_android_selection(self, uri_list):
+    """Callback for androidstorage4kivy."""
+    if uri_list:
+        ss = SharedStorage()
+        # Get a temporary file path from the URI
+        temp_path = ss.get_cache_path(uri_list[0])
+        self.finalize_import(temp_path)
+
+def handle_desktop_selection(self, selection):
+    """Callback for plyer filechooser."""
+    if selection:
+        self.finalize_import(selection[0])
+
+def old_finalize_import(self, source_path):
+    """The final step that overwrites the config and reloads."""
+    try:
+        # Overwrite the 'bulletproof' internal config
+        shutil.copyfile(source_path, self.config_file)
+
+        # Now trigger your existing reload
+        self.get_config() 
+        # Re-initialize your UI components here
+        print("Config updated and reloaded!")
+    except Exception as e:
+        print(f"Error during import: {e}")
+
+def finalize_import(self, source_path):
+    """Overwrites internal config and triggers your existing rebuild."""
+    try:
+        # 1. Overwrite your 'bulletproof' internal .ini file
+        shutil.copyfile(source_path, self.config_file)
+
+        # 2. Trigger your existing logic to re-read and re-draw
+        self.rebuild_ui() 
+        print("Import successful: UI reloaded.")
+    except Exception as e:
+        print(f"Import failed: {e}")
+
+
+
+
+
 try:
     from android.storage import primary_external_storage_path
     Logger.info("imported for android storage")
