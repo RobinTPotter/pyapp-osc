@@ -58,8 +58,9 @@ class OSC(App):
 
 
 
-    def trigger_import(self):
+    def trigger_import(self, value):
         """Call this from your 'Import' button."""
+        Logger.info(f"trigger_import {value}")
         if platform == 'android':
             # 📱 Android SAF logic
             ss = SharedStorage()
