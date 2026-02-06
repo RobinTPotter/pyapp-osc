@@ -76,6 +76,28 @@ class OSC(App):
             filechooser.open_file(on_selection=self.handle_desktop_selection)
 
     def handle_android_selection(self, uri_list):
+        """Callback for androidstorage4kivy file selection."""
+        if not uri_list:
+            return
+
+        try:
+            ss = SharedStorage()
+
+            # Copy the selected shared file into private app storage
+            private_path = ss.copy_from_shared(uri_list[0])
+
+            if not private_path:
+                raise RuntimeError("Failed to copy file from shared storage")
+
+            # Now this is a REAL file path that Python can open
+            self.finalize_import(private_path)
+
+        except Exception as e:
+            Logger.exception(f"Android file import failed: {e}")
+
+
+
+    def dont_handle_android_selection(self, uri_list):
         """Callback for androidstorage4kivy."""
         if uri_list:
             ss = SharedStorage()
