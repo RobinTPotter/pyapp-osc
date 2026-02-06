@@ -22,7 +22,7 @@ jobs:
           cp debug.keystore ~/.android/debug.keystore
       - name: Build with Buildozer
         env:
-          P4A_RELEASE_KEYSTORE: debug.keystore
+          P4A_RELEASE_KEYSTORE: /github/workspace/debug.keystore
           P4A_RELEASE_KEYSTORE_PASSWD: android
           P4A_RELEASE_KEYALIAS_PASSWD: android
           P4A_RELEASE_KEYALIAS: androiddebugkey
