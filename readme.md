@@ -27,3 +27,12 @@ when the corresponding button is pressed. parameters are read/written to config 
 param message has a special meaning, all other lines add a button in top or bottom grid
 
 adding a #/param line will make a carousel split such that subsequent parameters will appear on the next screen.
+
+---
+
+note on building. there is a GitHub workflow and buildozer.spec. also a buildozer.spec.local for when nobody is using Minecraft. this uses a BUILD_NO env var to set the version as 0.1.XXX
+
+
+cd pyapp-osc
+podman run -it --rm -v %cd%\.buildozer:/home/user/.buildozer -v %cd%:/home/user/hostcwd -e BUILD_NO=43 kivy/buildozer android debug
+
