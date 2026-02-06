@@ -13,7 +13,8 @@ android.adaptive_icon.foreground = icon_foreground.png
 android.adaptive_icon.background = icon_background.png
 presplash.filename = presplash.png
 
-#debug keystore
+android.release_artifact = apk
+
 android.debug_artifact = apk
 android.debug_keystore = ./debug.keystore
 android.debug_keystore_passwd = android
