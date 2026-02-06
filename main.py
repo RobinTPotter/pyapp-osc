@@ -64,11 +64,7 @@ class OSC(App):
         if platform == 'android':
 
 
-            self.chooser = Chooser()
-            
-            # 2. Bind the selection event to your handler
-            self.chooser.bind(on_selection=self.handle_android_selection)
-            
+            self.chooser = Chooser(callback=self.handle_android_selection)
             # 3. Trigger the UI
             self.chooser.choose_content()
 
