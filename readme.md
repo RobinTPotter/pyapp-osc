@@ -34,5 +34,5 @@ note on building. there is a GitHub workflow and buildozer.spec. also a buildoze
 
 
 cd pyapp-osc
-podman run -it --rm -v %cd%\.buildozer:/home/user/.buildozer -v %cd%:/home/user/hostcwd -e BUILD_NO=43 kivy/buildozer android debug
+podman run -it --rm -v %cd%\.buildozer:/home/user/.buildozer -v %cd%:/home/user/hostcwd -e BUILD_NO=43 kivy/buildozer -s buildozer.spec.local android debug
 
