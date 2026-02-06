@@ -62,9 +62,18 @@ class OSC(App):
         """Call this from your 'Import' button."""
         Logger.info(f"trigger_import {value}")
         if platform == 'android':
+
+
+            self.chooser = Chooser()
+            
+            # 2. Bind the selection event to your handler
+            self.chooser.bind(on_selection=self.handle_android_selection)
+            
+            # 3. Trigger the UI
+            self.chooser.choose_content()
+
+
             # 📱 Android SAF logic
-            ss = Chooser()
-            ss.choose_content(on_finished=self.handle_android_selection)
         else:
             # 🖥️ Desktop Path logic
             from plyer import filechooser
