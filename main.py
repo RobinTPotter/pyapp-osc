@@ -465,8 +465,8 @@ class OSC(App):
             Logger.info(f"Exported to {download_path}")
 
             # Visual feedback
-            button.text = "✓"
-            Clock.schedule_once(lambda dt: setattr(button, 'text', '↓'), 1.5)
+            button.text = "*"
+            Clock.schedule_once(lambda dt: setattr(button, 'text', 'E'), 1.5)
             if can_vibrate: vibrator.vibrate(0.1)
 
         except Exception as e:
