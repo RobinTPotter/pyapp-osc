@@ -33,7 +33,7 @@ Logger.info(f"platform {platform}")
 
 # We wrap the Android import so the desktop version doesn't crash
 if platform == 'android':
-    from androidstorage4kivy import SharedStorage
+    from androidstorage4kivy import SharedStorage, Chooser
 
 
 
@@ -63,7 +63,7 @@ class OSC(App):
         Logger.info(f"trigger_import {value}")
         if platform == 'android':
             # 📱 Android SAF logic
-            ss = SharedStorage()
+            ss = Chooser()
             ss.choose_content(on_finished=self.handle_android_selection)
         else:
             # 🖥️ Desktop Path logic
