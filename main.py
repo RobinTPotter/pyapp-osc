@@ -478,7 +478,7 @@ class OSC(App):
 
         # Send all sliders button (small, labeled "S")
         send_all_btn = Button(text="S", size_hint_x=0.5)
-        send_all_btn.bind(on_press=self.send_all_param)
+        send_all_btn.bind(on_press=self.send_all_params)
 
         # Add all top bar widgets
         very_top.add_widget(self.ip_text)
