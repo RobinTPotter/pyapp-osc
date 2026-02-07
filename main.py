@@ -22,20 +22,14 @@ def excepthook(exctype, value, traceback):
 
 sys.excepthook = excepthook
 
-
-
-import os
 import shutil
 from kivy.utils import platform
 
 Logger.info(f"platform {platform}")
 
-
 # We wrap the Android import so the desktop version doesn't crash
 if platform == 'android':
     from androidstorage4kivy import SharedStorage, Chooser
-
-
 
 try:
     from android.storage import primary_external_storage_path
@@ -109,19 +103,6 @@ class OSC(App):
         """Callback for plyer filechooser."""
         if selection:
             self.finalize_import(selection[0])
-
-    def old_finalize_import(self, source_path):
-        """The final step that overwrites the config and reloads."""
-        try:
-            # Overwrite the 'bulletproof' internal config
-            shutil.copyfile(source_path, self.config_file)
-
-            # Now trigger your existing reload
-            self.get_config() 
-            # Re-initialize your UI components here
-            print("Config updated and reloaded!")
-        except Exception as e:
-            print(f"Error during import: {e}")
 
     def finalize_import(self, source_path):
         """Overwrites internal config and triggers your existing rebuild."""
@@ -361,8 +342,6 @@ class OSC(App):
 
         return self.root
 
-
-
     def set_connect(self, button):
         try:
             self.ip = self.ip_text.text
@@ -450,7 +429,6 @@ class OSC(App):
             Logger.error(f"button release {e}")
             button.background_normal = ""
             button.background_color = [1,0,0,1]
-
 
     def export_config(self, button):
         """Export config to Download folder with timestamp"""
