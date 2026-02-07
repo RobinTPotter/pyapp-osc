@@ -661,6 +661,8 @@ class OSC(App):
         l = BoxLayout(orientation="horizontal")
         l.add_widget(b)
         l.add_widget(s)
+        l._button = b
+        l._slider = s
         return l
 
     def update_slider(self, s, value):
@@ -790,8 +792,9 @@ class OSC(App):
             button.background_color = [1, 0, 0, 1]
 
     def send_all_params(self, button):
+        # bear im mind its a boxlayout, i added a button property
         for sld in self.all_param_sliders:
-            self.on_button(sld._companion)
+            self.on_button(sld._button)
 
     def set_connect(self, button):
         """
