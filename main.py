@@ -465,7 +465,7 @@ class OSC(App):
         self.port_text.height = self.port_text.line_height
         
         # Button to apply IP/port changes
-        setme = Button(text="Set")
+        setme = Button(text="Set", size_hint_x=1)
         setme.bind(on_press=self.set_connect)
 
         # Export config button (small, labeled "E")
@@ -476,8 +476,8 @@ class OSC(App):
         import_btn = Button(text="I", size_hint_x=0.5)
         import_btn.bind(on_press=self.trigger_import)
 
-        # Send all sliders button (small, labeled "S")
-        send_all_btn = Button(text="S", size_hint_x=0.5)
+        # Send all sliders button (small, labeled "Sn")
+        send_all_btn = Button(text="Sn", size_hint_x=1)
         send_all_btn.bind(on_press=self.send_all_params)
 
         # Add all top bar widgets
@@ -486,6 +486,7 @@ class OSC(App):
         very_top.add_widget(setme)
         very_top.add_widget(import_btn)
         very_top.add_widget(export_btn)
+        very_top.add_widget(send_all_btn)
         self.root.add_widget(very_top)
         Logger.info("very_top set up")
 
