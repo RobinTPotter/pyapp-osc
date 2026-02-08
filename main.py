@@ -60,6 +60,7 @@ except:
 # Attempt to import vibration functionality (mobile devices)
 try:
     from plyer import vibrator
+    vibrator.vibrate(0)
     can_vibrate = True
 except Exception as e:
     Logger.info(f"no vibrate {e}")
