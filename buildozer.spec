@@ -14,6 +14,7 @@ android.adaptive_icon.foreground = icon_foreground.png
 android.adaptive_icon.background = icon_background.png
 presplash.filename = presplash.png
 
+android.arch = arm64-v8a
 android.release_artifact = apk
 
 android.debug_artifact = apk
