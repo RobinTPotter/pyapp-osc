@@ -7,6 +7,7 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
+from filechooser import open_file
 from osc_build import *
 from threading import Thread
 from time import time
@@ -194,7 +195,7 @@ class OSC(App):
             import shutil
             from datetime import datetime
 
-            # Generate filename with current date/time
+            # Generate ¹filename with current date/time
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             download_path = primary_external_storage_path() + f"/Download/osc_config_{timestamp}.ini"
 
@@ -226,9 +227,7 @@ class OSC(App):
             # Trigger the Android file picker UI
             self.chooser.choose_content()
         else:
-            # Desktop: Use plyer's file picker
-            from plyer import filechooser
-            filechooser.open_file(on_selection=self.handle_desktop_selection)
+            open_file(on_selection=self.handle_desktop_selection)
 
     def handle_android_selection(self, uri_list):
         """
