@@ -300,36 +300,6 @@ class OSC(App):
         except Exception as e:
             print(f"Import failed: {e}")
 
-    def import_config(self, button):
-        """
-        UNUSED: Alternative import method using plyer's filechooser.
-        The trigger_import method is used instead.
-        """
-        try:
-            from plyer import filechooser
-            filechooser.open_file(
-                on_selection=self.handle_import,
-                filters=["*.ini"]
-            )
-        except Exception as e:
-            Logger.error(f"Import picker failed: {e}")
-            button.background_color = [1, 0, 0, 1]
-
-    def handle_import(self, selection):
-        """
-        UNUSED: Handler for the import_config method.
-        Copies the selected file and rebuilds the UI.
-        """
-        if selection:
-            try:
-                import shutil
-                shutil.copy(selection[0], self.config_file)
-                Logger.info(f"Imported from {selection[0]}")
-                self.rebuild_ui(0)
-                if can_vibrate: 
-                    vibrator.vibrate(0.1)
-            except Exception as e:
-                Logger.error(f"Import copy failed: {e}")
 
     # ========================================================================
     # APP LIFECYCLE METHODS
@@ -475,12 +445,12 @@ class OSC(App):
         dropdown = DropDown()
 
         # Export config button (small, labeled "E")
-        export_btn = Button(text="Ex", size_hint_y=None, height=44)
+        export_btn = Button(text="Ex")
         export_btn.bind(on_press=self.export_config)
         export_btn.bind(on_release=lambda btn: dropdown.select(btn.text))
         
         # Import config button (small, labeled "I")
-        import_btn = Button(text="Im", size_hint_y=None, height=44)
+        import_btn = Button(text="Im")
         import_btn.bind(on_press=self.trigger_import)
         import_btn.bind(on_release=lambda btn: dropdown.select(btn.text))
         dropdown.add_widget(import_btn)
