@@ -450,7 +450,7 @@ class OSC(App):
         export_btn.bind(on_release=lambda btn: dropdown.select(btn.text))
         
         # Import config button (small, labeled "I")
-        import_btn = Button(text="Im", size_hint_h=None, height=80)
+        import_btn = Button(text="Im", size_hint_y=None, height=80)
         import_btn.bind(on_press=self.trigger_import)
         import_btn.bind(on_release=lambda btn: dropdown.select(btn.text))
         dropdown.add_widget(import_btn)
