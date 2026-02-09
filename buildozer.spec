@@ -10,8 +10,10 @@ orientation = portrait
 osx.kivy_version = 2.1.0
 android.permissions = INTERNET,VIBRATE,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 android.api = 34
+
 android.adaptive_icon.foreground = icon_foreground.png
 android.adaptive_icon.background = icon_background.png
+icon.filename = icon_foreground.png
 presplash.filename = presplash.png
 
 android.arch = arm64-v8a
