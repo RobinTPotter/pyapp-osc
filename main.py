@@ -44,6 +44,8 @@ Logger.info(f"platform {platform}")
 # Android storage API - only import on Android to prevent desktop crashes
 if platform == 'android':
     from androidstorage4kivy import SharedStorage, Chooser
+else:
+    Window.size = (432, 768)
 
 # Attempt to import Android-specific storage path functionality
 try:
