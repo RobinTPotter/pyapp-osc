@@ -486,7 +486,7 @@ class OSC(App):
         dropdown.add_widget(import_btn)
         dropdown.add_widget(export_btn)
 
-        file_btn = Button(text="F", size_hint_x=0.5)
+        file_btn = Button(text="F", size_hint_x=1)
         file_btn.bind(on_release=dropdown.open)
 
         #dropdown.bind(on_select=lambda instance, x: setattr(file_btn, "text", x))
