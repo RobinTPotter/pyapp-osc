@@ -7,6 +7,7 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.dropdown import DropDown
 from filechooser import open_file
 from osc_build import *
 from threading import Thread
@@ -448,6 +449,7 @@ class OSC(App):
             height=dp(28)  # Fixed height in density-independent pixels
         )
 
+
         # IP address input field
         self.ip_text = TextInput(
             text=str(self.ip).strip(), 
@@ -470,13 +472,24 @@ class OSC(App):
         setme = Button(text="Set", size_hint_x=1)
         setme.bind(on_press=self.set_connect)
 
+        dropdown = DropDown()
+
         # Export config button (small, labeled "E")
-        export_btn = Button(text="E", size_hint_x=0.5)
+        export_btn = Button(text="Ex", size_hint_y=None, height=44)
         export_btn.bind(on_press=self.export_config)
+        export_btn.bind(on_release=lambda btn: dropdown.select(btn.text))
         
         # Import config button (small, labeled "I")
-        import_btn = Button(text="I", size_hint_x=0.5)
+        import_btn = Button(text="Im", size_hint_y=None, height=44)
         import_btn.bind(on_press=self.trigger_import)
+        import_btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+        dropdown.add_widget(import_btn)
+        dropdown.add_widget(export_btn)
+
+        file_btn = Button(text="F", size_hint_x=0.5)
+        file_btn.bind(on_release=dropdown.open)
+
+        #dropdown.bind(on_select=lambda instance, x: setattr(file_btn, "text", x))
 
         # Send all sliders button (small, labeled "Sn")
         send_all_btn = Button(text="Sn", size_hint_x=1)
@@ -486,8 +499,9 @@ class OSC(App):
         very_top.add_widget(self.ip_text)
         very_top.add_widget(self.port_text)
         very_top.add_widget(setme)
-        very_top.add_widget(import_btn)
-        very_top.add_widget(export_btn)
+#        very_top.add_widget(import_btn)
+#        very_top.add_widget(export_btn)
+        very_top.add_widget(file_btn)
         very_top.add_widget(send_all_btn)
         self.root.add_widget(very_top)
         Logger.info("very_top set up")
