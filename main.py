@@ -182,7 +182,7 @@ class OSC(App):
                     if o[0].split()[1] in d:
                         # Replace the last value with the new one
                         d = f"{' '.join(o[0].split()[:-1])} {o[1]}"
-                print(f"Writing: {d}")
+                #print(f"Writing: {d}")
                 f.write(f"{d}\n")
 
     # ========================================================================
@@ -693,6 +693,7 @@ class OSC(App):
         
         # Debounce: ignore clicks within 0.2 seconds
         if getattr(button, "_last", 0) + 0.2 > now:
+            Logger.info("ignoring")
             return
 
         button._last = now
