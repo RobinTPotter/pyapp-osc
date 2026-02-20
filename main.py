@@ -711,7 +711,8 @@ class OSC(App):
             msg = button._message.split()
             address = msg.pop(0)  # e.g., "/note" or "/param"
             msg.insert(0, "pressed")  # Add event type
-            
+
+            Logger.info((self.ip, self.port, address, msg))
             # Send OSC message in background thread
             Thread(
                 target=send_osc,
