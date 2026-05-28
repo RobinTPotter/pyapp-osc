@@ -116,10 +116,10 @@ class OSC(App):
                 f.write("57120\n")
                 # Default top buttons (voice triggers)
                 for b in range(4): 
-                    f.write(f"/voice/t{b}\n")
+                    f.write(f"/voice t{b}\n")
                 # Default note buttons (MIDI notes 60-75)
                 for b in range(16): 
-                    f.write(f"/note {b+60}\n")
+                    f.write(f"/note {b+60} 30\n")
                 # Default parameter sliders with min, max, and starting values
                 f.write(f"/param a1 0.0 1.0 0.5\n")
                 f.write(f"/param a2 0.0 1.0 0.5\n")
