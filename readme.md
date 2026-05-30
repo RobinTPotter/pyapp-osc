@@ -34,16 +34,16 @@ sample config:
 ```
 192.168.1.174
 57120
-/voice/sine
+/voice sine
 
-/voice/saw
+/voice saw
 
-/voice/pulse
+/voice pulse
 
 
-/voice/vox
-/note 60
-/note 61
+/voice vox
+/note 60 12
+/note 61 34
 
 
 /note 75
@@ -58,7 +58,7 @@ sample config:
 /param a4 0.0 1.0 0.8
 ```
 
-when a button is pressed the messages are send to the host and port. for normal buttons the defined message in config is sent to the address. in the case of a slider, the message is the name of the parameter and the current value. for all messages "pressed" or "released" is inserted at the start of the message. this is so the listener has the option to react accordingly.
+when a button is pressed the messages are send to the host and port. for normal buttons the defined message in config is sent to the address. in the case of a slider, the message is the name of the parameter and the current value. for all messages "pressed" or "released" is inserted at the start of the message. this is so the listener has the option to react accordingly. optional 3rd arg seen in /note is velocity
 
 
 
