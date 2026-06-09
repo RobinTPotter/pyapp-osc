@@ -29,3 +29,4 @@ presplash.filename = presplash.png
 [buildozer]
 log_level = 2
 warn_on_root = 1
+android.ndk_path = /home/runner/Android/ndk/25.2.9519653
