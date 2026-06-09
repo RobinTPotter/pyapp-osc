@@ -11,7 +11,6 @@ osx.kivy_version = 2.1.0
 android.permissions = INTERNET,VIBRATE,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 android.api = 34
 android.minapi = 21
-android.ndk = 25.2.9519653
 android.sdk = 34
 android.arch = arm64-v8a
 android.archs = arm64-v8a
@@ -29,4 +28,3 @@ presplash.filename = presplash.png
 [buildozer]
 log_level = 2
 warn_on_root = 1
-android.ndk_path = /home/runner/Android/ndk/25.2.9519653
