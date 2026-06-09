@@ -35,7 +35,7 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython kivy
       - name: Set up Android SDK
-          uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v3
       - name: Install Android SDK components
         run: |
           sdkmanager "build-tools;35.0.0"
