@@ -22,13 +22,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Remove problematic PPAs
-        run: |
-          sudo add-apt-repository --remove ppa:openjdk-r/ppa || true
-          sudo apt-get update || true
+      - name: Setup Android SDK and NDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          ndk-version: 25.2.9519653
+          build-tools-version: 35.0.0
 
       - name: Install system build dependencies
         run: |
+          sudo apt-get update
           sudo apt-get install -y \
             build-essential \
             libssl-dev \
@@ -41,29 +44,21 @@ jobs:
             zip \
             unzip
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          api-level: 34
-          ndk-version: 25.2.9519653
-          build-tools-version: 35.0.0
-
-      - name: Configure Android SDK paths
+      - name: Set up debug keystore
         run: |
           mkdir -p ~/.android
           cp debug.keystore ~/.android/debug.keystore
 
       - name: Install Python build tools
         run: |
-          pip install --upgrade pip setuptools
+          pip install --upgrade pip setuptools wheel
           pip install buildozer cython kivy
 
       - name: Build APK with Buildozer
         env:
           ANDROID_SDK_ROOT: /home/runner/Android/sdk
           ANDROID_HOME: /home/runner/Android/sdk
-          ANDROID_SDK: /home/runner/Android/sdk
-          ANDROID_NDK: /home/runner/Android/ndk/25.2.9519653
+          ANDROID_NDK_ROOT: /home/runner/Android/ndk/25.2.9519653
           P4A_RELEASE_KEYSTORE: /home/runner/.android/debug.keystore
           P4A_RELEASE_KEYSTORE_PASSWD: android
           P4A_RELEASE_KEYALIAS_PASSWD: android
@@ -78,4 +73,3 @@ jobs:
           name: apk
           path: bin/*.apk
           retention-days: 30
-
