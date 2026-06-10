@@ -12,6 +12,7 @@ android.permissions = INTERNET,VIBRATE,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STOR
 android.api = 34
 android.minapi = 21
 android.sdk = 34
+android.accept_sdk_license = True
 android.arch = arm64-v8a
 android.archs = arm64-v8a
 android.release_artifact = apk
