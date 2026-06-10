@@ -27,6 +27,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
+            autoconf \
+            automake \
+            libtool \
+            pkg-config \
             libssl-dev \
             libffi-dev \
             python3-dev \
@@ -45,7 +49,11 @@ jobs:
       - name: Install Python build tools
         run: |
           pip install --upgrade pip setuptools wheel
-          pip install buildozer cython kivy
+          pip install \
+            buildozer==1.5.0 \
+            python-for-android==2024.1.21 \
+            "cython<3" \
+            kivy==2.3.0
 
       - name: Build APK with Buildozer
         env:
@@ -54,7 +62,6 @@ jobs:
           P4A_RELEASE_KEYALIAS_PASSWD: android
           P4A_RELEASE_KEYALIAS: androiddebugkey
         run: |
-          export P4A_SKIP_UPDATE=1
           buildozer android release
 
       - name: Upload APK artifact
