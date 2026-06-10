@@ -40,6 +40,9 @@ jobs:
             wget \
             zip \
             unzip
+          
+          # Upgrade to latest autotools (fixes libffi autoconf issues)
+          sudo apt-get install -y --only-upgrade autoconf automake libtool 2>/dev/null || true
 
       - name: Set up debug keystore
         run: |
@@ -54,6 +57,38 @@ jobs:
             python-for-android==2024.1.21 \
             "cython<3" \
             kivy==2.3.0
+          
+          # Patch p4a's libffi recipe to run autoupdate on configure.ac before autogen.sh
+          python3 << 'EOFPATCH'
+          import os
+          import re
+          import pythonforandroid
+          
+          p4a_dir = os.path.dirname(pythonforandroid.__file__)
+          libffi_recipe = os.path.join(p4a_dir, "recipes/libffi/__init__.py")
+          
+          if os.path.exists(libffi_recipe):
+              with open(libffi_recipe, 'r') as f:
+                  content = f.read()
+              
+              # Add subprocess import if not present
+              if "import subprocess" not in content:
+                  content = content.replace("import os", "import os\nimport subprocess")
+              
+              # Inject autoupdate call before autogen.sh if not already there
+              if "autoupdate" not in content:
+                  pattern = r"(shprint\(sh\.Command\('\./autogen\.sh'\))"
+                  replacement = r"subprocess.run(['autoupdate', 'configure.ac'], env=env, capture_output=True, cwd=self.get_build_dir(arch))\n            \1"
+                  content = re.sub(pattern, replacement, content)
+                  
+                  with open(libffi_recipe, 'w') as f:
+                      f.write(content)
+                  print("Successfully patched libffi recipe to run autoupdate before autogen.sh")
+              else:
+                  print("libffi recipe already patched or uses autoupdate")
+          else:
+              print(f"libffi recipe not found at {libffi_recipe}")
+          EOFPATCH
 
       - name: Build APK with Buildozer
         env:
